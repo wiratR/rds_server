@@ -1,0 +1,263 @@
+basePath: /api
+definitions:
+  models.ResponseError:
+    properties:
+      data:
+        properties:
+          message:
+            type: string
+        type: object
+      status:
+        type: string
+    type: object
+  models.ResponseSuccessToken:
+    properties:
+      data:
+        properties:
+          token:
+            type: string
+        type: object
+      status:
+        type: string
+    type: object
+  models.ResponseSuccessUser:
+    properties:
+      data:
+        properties:
+          user:
+            $ref: '#/definitions/models.UserResponse'
+        type: object
+      status:
+        type: string
+    type: object
+  models.SignInInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.SignUpInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      passwordConfirm:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - passwordConfirm
+    type: object
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        description: ID     uint   `gorm:"primary_key"`
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      updatedAt:
+        type: string
+      verified:
+        type: boolean
+    type: object
+  models.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.UserUpdate:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      verified:
+        type: boolean
+    type: object
+host: 127.0.0.1:8000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample api server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: login
+      parameters:
+      - description: Login Data
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/models.ResponseSuccessToken'
+        "400":
+          description: Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: login
+      tags:
+      - Auth
+  /auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: logout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: logout
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: register new account
+      parameters:
+      - description: Register Data
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignUpInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Ok
+          schema:
+            items:
+              $ref: '#/definitions/models.ResponseSuccessUser'
+            type: array
+        "400":
+          description: Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: register new account
+      tags:
+      - Auth
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get user infomation by id
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: get user infomation by id
+      tags:
+      - Uer
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Get current user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: get current user
+      tags:
+      - User
+  /users/update:
+    patch:
+      consumes:
+      - application/json
+      description: update user detail
+      parameters:
+      - description: User Update Data
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: update user detail
+      tags:
+      - Uer
+schemes:
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
