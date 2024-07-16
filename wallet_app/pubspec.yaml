@@ -1,0 +1,39 @@
+name: wallet_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0-36.0.dev
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  flutter_native_splash: ^2.0.5
+  intl_phone_number_input: ^0.7.0+2
+
+flutter_native_splash:
+  color: "#ffffff" # Background color for the splash screen.
+  image: assets/splash.png # Path to your splash screen image.
+  android: true # Enable splash screen for Android.
+  ios: true # Enable splash screen for iOS.
+  web: true # Enable splash screen for Web.
+  android_gravity: center # Gravity for the image on Android.
+  ios_content_mode: scaleAspectFill # Content mode for the image on iOS.
+  web_image_mode: center # Image mode for the Web.
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/logo.png
+    - assets/pages/
+    - assets/icons/
+
+assets:
+  - assets/splash.png
