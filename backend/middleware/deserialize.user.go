@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/wiratR/go-orm-jwt/config"
-	"github.com/wiratR/go-orm-jwt/database"
-	"github.com/wiratR/go-orm-jwt/models"
-	"github.com/wiratR/go-orm-jwt/utils"
+	"github.com/wiratR/rds_server/config"
+	"github.com/wiratR/rds_server/database"
+	"github.com/wiratR/rds_server/models"
+	"github.com/wiratR/rds_server/utils"
 )
 
 func DeserializeUser(c *fiber.Ctx) error {

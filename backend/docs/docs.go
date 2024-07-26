@@ -130,6 +130,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/payment/nativepay": {
+            "post": {
+                "description": "payment connect to Ksher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "payment connect to Ksher",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ResponseBody"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
                 "description": "Get current user.",
@@ -230,6 +262,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ResponseError": {
             "type": "object",
             "properties": {

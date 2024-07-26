@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/wiratR/go-orm-jwt/config"
+	"github.com/wiratR/rds_server/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

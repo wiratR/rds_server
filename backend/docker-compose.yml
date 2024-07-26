@@ -21,7 +21,7 @@ services:
     environment:
       DB_USER: admin
       DB_PASSWORD: P@ssw0rd
-      DB_NAME: rds
+      DB_NAME: rds_db
       DB_HOST: postgres  # Use service name here
       DB_PORT: 5432      # PostgreSQL default port
     depends_on:

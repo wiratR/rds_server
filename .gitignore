@@ -1,2 +1,4 @@
 backend/tmp/build-errors.log
 backend/tmp/main
+backend/config/key/*.pem
+wallet_app/assets/key/*.pem

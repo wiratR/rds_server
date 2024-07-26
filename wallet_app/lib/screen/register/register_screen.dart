@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../components/appbar/custom_app_bar.dart';
+import '../../constants.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -11,6 +12,7 @@ class RegisterScreen extends StatelessWidget {
         logoAssetPath: 'assets/logo.png', // Path to your logo asset
         showBackButton:
             true, // Set this to true if you want to show the back button
+        showIconLogout: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -110,7 +112,7 @@ class RegisterScreen extends StatelessWidget {
                   // Handle create account
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF6C63FF), // Replace with your color
+                  backgroundColor: kPrimaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),

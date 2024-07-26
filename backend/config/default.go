@@ -32,6 +32,8 @@ type Config struct {
 	DBPort         int    `mapstructure:"POSTGRES_PORT"`
 
 	DomainHost string `mapstructure:"DOMAIN_HOST"`
+
+	FileKeyPath string `mapstructure:"FILE_KEY_PATH"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

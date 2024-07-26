@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
-	dbconn "github.com/wiratR/go-orm-jwt/database"
-	"github.com/wiratR/go-orm-jwt/models"
-	"github.com/wiratR/go-orm-jwt/utils"
+	dbconn "github.com/wiratR/rds_server/database"
+	"github.com/wiratR/rds_server/models"
+	"github.com/wiratR/rds_server/utils"
 )
 
 // get all todos

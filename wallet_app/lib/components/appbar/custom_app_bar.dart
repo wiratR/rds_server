@@ -3,8 +3,13 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String logoAssetPath;
   final bool showBackButton;
+  final bool showIconLogout;
 
-  CustomAppBar({required this.logoAssetPath, this.showBackButton = false});
+  CustomAppBar({
+    required this.logoAssetPath,
+    this.showBackButton = false,
+    this.showIconLogout = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +47,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       automaticallyImplyLeading:
           false, // Prevents default back button when showBackButton is false
+      actions: showIconLogout
+          ? [
+              IconButton(
+                icon: Icon(Icons.logout),
+                onPressed: () {
+                  // Add your logout functionality here
+                },
+              ),
+            ]
+          : null,
     );
   }
 

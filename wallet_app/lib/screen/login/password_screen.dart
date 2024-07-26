@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../components/appbar/custom_app_bar.dart';
 import '../../components/bottomsheet/forgot_password_sheet.dart';
+import '../../constants.dart';
+import '../../routes/app_routes.dart';
 
 class PasswordScreen extends StatefulWidget {
+  final String phoneNumber; // Add this line to accept the phone number
+
+  PasswordScreen({required this.phoneNumber}); // Update the constructor
+
   @override
   _PasswordScreenState createState() => _PasswordScreenState();
 }
@@ -11,6 +17,29 @@ class _PasswordScreenState extends State<PasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
+  // void _sendOtp() {
+  //   // Implement your OTP sending logic here
+  //   print('Sending OTP to: ${widget.phoneNumber}');
+  //   // Navigate to the OTP verification screen
+  //   Navigator.pushNamed(
+  //     context,
+  //     '/otp-verification',
+  //     arguments: OtpVerificationArguments(widget.phoneNumber),
+  //   );
+  // }
+
+  void _login() {
+    // Add your login logic here
+    // After login, send OTP
+    // _sendOtp();
+    print('login with phone : ${widget.phoneNumber}');
+    if ((widget.phoneNumber == '+66809921372') &
+        (_passwordController.text == '12345678')) {
+      print('login conplete');
+      Navigator.pushNamed(context, '/home');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +47,7 @@ class _PasswordScreenState extends State<PasswordScreen> {
         logoAssetPath: 'assets/logo.png', // Path to your logo asset
         showBackButton:
             true, // Set this to true if you want to show the back button
+        showIconLogout: false,
       ), // Use the custom app bar
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -84,12 +114,10 @@ class _PasswordScreenState extends State<PasswordScreen> {
             ),
             SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () {
-                // Handle login
-              },
+              onPressed: _login,
               child: Text('Login'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF6C63FF), // Replace with your color
+                backgroundColor: kPrimaryColor, // Replace with your color
                 minimumSize: Size(double.infinity, 50),
                 foregroundColor: Colors.white,
               ),

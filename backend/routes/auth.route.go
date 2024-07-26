@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/wiratR/go-orm-jwt/controllers"
-	"github.com/wiratR/go-orm-jwt/middleware"
+	"github.com/wiratR/rds_server/controllers"
+	"github.com/wiratR/rds_server/middleware"
 )
 
 func AuthRoute(route fiber.Router) {

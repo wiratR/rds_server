@@ -8,10 +8,11 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/wiratR/go-orm-jwt/config"
-	dbconn "github.com/wiratR/go-orm-jwt/database"
-	"github.com/wiratR/go-orm-jwt/models"
-	"github.com/wiratR/go-orm-jwt/utils"
+
+	"github.com/wiratR/rds_server/config"
+	dbconn "github.com/wiratR/rds_server/database"
+	"github.com/wiratR/rds_server/models"
+	"github.com/wiratR/rds_server/utils"
 )
 
 // SignUpUser func Register New Account

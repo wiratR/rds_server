@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../screen/login/login_screen.dart';
+import '../screen/login/otp_verification_screen.dart';
 import '../screen/login/password_screen.dart';
+import '../screen/main/home/home_screen.dart';
 import '../screen/register/register_screen.dart';
 
 class AppRoutes {
@@ -9,11 +11,19 @@ class AppRoutes {
       case '/':
         return MaterialPageRoute(builder: (_) => LoginScreen());
       case '/password':
-        return MaterialPageRoute(builder: (_) => PasswordScreen());
+        final args = settings.arguments as PasswordScreenArguments;
+        return MaterialPageRoute(
+          builder: (_) => PasswordScreen(phoneNumber: args.phoneNumber),
+        );
       case '/register':
         return MaterialPageRoute(builder: (_) => RegisterScreen());
-      // case '/home':
-      //   return MaterialPageRoute(builder: (_) => HomeScreen());
+      case '/otp-verification':
+        final args = settings.arguments as OtpVerificationArguments;
+        return MaterialPageRoute(
+          builder: (_) => OtpVerificationScreen(phoneNumber: args.phoneNumber),
+        );
+      case '/home':
+        return MaterialPageRoute(builder: (_) => HomeScreen());
       // Handle undefined routes
       default:
         return MaterialPageRoute(
@@ -25,4 +35,16 @@ class AppRoutes {
         );
     }
   }
+}
+
+class OtpVerificationArguments {
+  final String phoneNumber;
+
+  OtpVerificationArguments(this.phoneNumber);
+}
+
+class PasswordScreenArguments {
+  final String phoneNumber;
+
+  PasswordScreenArguments(this.phoneNumber);
 }

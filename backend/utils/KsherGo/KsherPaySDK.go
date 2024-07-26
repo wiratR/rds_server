@@ -124,8 +124,8 @@ func KsherSign(params url.Values, privateKeyData []byte) (sign string, err error
 	//sign_base := base64.StdEncoding.EncodeToString(sign_byte)
 	//sign_hex := hex.EncodeToString(sign_byte)
 	sign = fmt.Sprintf("%x", signByte)
-	fmt.Println(stringToSign)
-	fmt.Println(sign)
+	// fmt.Println("string to sign = " + stringToSign)
+	// fmt.Println("get sign out = " + sign)
 	return sign, nil
 }
 
@@ -169,6 +169,22 @@ func KsherVerify(resp KsherResp, publicKeyData []byte) error {
 	hash := md5.New()
 	hash.Write(dataByte)
 	hashed := hash.Sum(nil)
+
+	// fmt.Println("--------------------------------")
+	// fmt.Println("resonse sign = " + resp.Sign)
+	// fmt.Println("--------------------------------")
+	fmt.Println("--------------------------------")
+	fmt.Println("signature = " + string(sign))
+	fmt.Println("--------------------------------")
+	// fmt.Println("--------------------------------")
+	// fmt.Println("string to verify = " + stringToSign)
+	// fmt.Println("--------------------------------")
+	fmt.Println("publicKeyData = " + string(publicKeyData))
+	fmt.Println("--------------------------------")
+	fmt.Println("--------------------------------")
+	fmt.Println("hashed = " + string(hashed))
+	fmt.Println("--------------------------------")
+
 	return rsa.VerifyPKCS1v15(publicKey.(*rsa.PublicKey), crypto.MD5, hashed, sign)
 }
 
@@ -197,7 +213,7 @@ func KsherPost(url string, postValue url.Values, privateKeyData, publicKey []byt
 		return response, err
 	}
 	responseStr := string(body)
-	fmt.Println(responseStr)
+	fmt.Println("this nody to post = " + responseStr)
 	if err = json.Unmarshal(body, &response); err != nil {
 		fmt.Printf("Unmarshal err, %v\n", err)
 		return response, err

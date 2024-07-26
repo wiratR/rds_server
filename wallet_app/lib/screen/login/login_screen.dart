@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import '../../constants.dart';
+import '../../routes/app_routes.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -16,7 +18,12 @@ class _LoginScreenState extends State<LoginScreen> {
       // Perform login logic
       print('Phone number: ${number.phoneNumber}');
       // Navigate to the PasswordScreen
-      Navigator.pushNamed(context, '/password');
+      // Navigate to the PasswordScreen with the phone number
+      Navigator.pushNamed(
+        context,
+        '/password',
+        arguments: PasswordScreenArguments(number.phoneNumber!),
+      );
     }
   }
 
@@ -68,8 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Color(0xFF6C63FF), // Replace with your color
+                        backgroundColor: kPrimaryColor,
                         minimumSize: Size(double.infinity, 50),
                         foregroundColor: Colors.white,
                       ),

@@ -1,4 +1,4 @@
-module github.com/wiratR/go-orm-jwt
+module github.com/wiratR/rds_server
 
 go 1.22.4
 
