@@ -8,20 +8,25 @@ import (
 )
 
 type User struct {
-	ID *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
-	// ID     uint   `gorm:"primary_key"`
-	Name      string  `gorm:"type:varchar(100);not null"`
-	Email     string  `gorm:"type:varchar(100);uniqueIndex;not null"`
-	Password  string  `gorm:"type:varchar(100);not null"`
-	Verified  *bool   `gorm:"not null;default:false"`
-	Role      *string `gorm:"type:varchar(50);default:'user';not null"`
+	ID        *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	UserName  string     `gorm:"type:varchar(100);uniqueIndex;not null"`
+	FirstName string     `gorm:"type:varchar(100);not null"`
+	LastName  string     `gorm:"type:varchar(100);not null"`
+	Email     string     `gorm:"type:varchar(100);uniqueIndex;not null"`
+	Phone     string     `gorm:"type:varchar(20);uniqueIndex;not null"`
+	Password  string     `gorm:"type:varchar(100);not null"`
+	Verified  *bool      `gorm:"not null;default:false"`
+	Role      *string    `gorm:"type:varchar(50);default:'user';not null"`
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 }
 
 type SignUpInput struct {
-	Name            string `json:"name" validate:"required"`
+	UserName        string `json:"username" validate:"required"`
+	FirstName       string `json:"firstname" validate:"required"`
+	LastName        string `json:"lastname" validate:"required"`
 	Email           string `json:"email" validate:"required"`
+	Phone           string `json:"phone" validate:"required"`
 	Password        string `json:"password" validate:"required,min=8"`
 	PasswordConfirm string `json:"passwordConfirm" validate:"required,min=8"`
 }
@@ -31,28 +36,42 @@ type SignInInput struct {
 	Password string `json:"password"  validate:"required"`
 }
 
+type SignInByPhone struct {
+	Phone    string `json:"phone"  validate:"required"`
+	Password string `json:"password"  validate:"required"`
+}
+
 type UserResponse struct {
 	ID        uuid.UUID `json:"id,omitempty"`
-	Name      string    `json:"name,omitempty"`
+	UserName  string    `json:"username,omitempty"`
+	FirstName string    `json:"firstname,omitempty"`
+	LastName  string    `json:"lastname,omitempty"`
 	Email     string    `json:"email,omitempty"`
+	Phone     string    `json:"phone,omitempty"`
 	Role      string    `json:"role,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserUpdate struct {
-	Name     string `json:"name,omitempty"`
-	Email    string `json:"email,omitempty"`
-	Password string `json:"password,omitempty"`
-	Role     string `json:"role,omitempty"`
-	Verified bool   `json:"verified,omitempty"`
+	UserName  string `json:"username,omitempty"`
+	FirstName string `json:"firstname,omitempty"`
+	LastName  string `json:"lastname,omitempty"`
+	Email     string `json:"email,omitempty"`
+	Phone     string `json:"phone,omitempty"`
+	Password  string `json:"password,omitempty"`
+	Role      string `json:"role,omitempty"`
+	Verified  bool   `json:"verified,omitempty"`
 }
 
 func FilterUserRecord(user *User) UserResponse {
 	return UserResponse{
 		ID:        *user.ID,
-		Name:      user.Name,
+		UserName:  user.UserName,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 		Email:     user.Email,
+		Phone:     user.Phone,
 		Role:      *user.Role,
 		CreatedAt: *user.CreatedAt,
 		UpdatedAt: *user.UpdatedAt,

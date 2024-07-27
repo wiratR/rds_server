@@ -50,9 +50,12 @@ func SignUpUser(c *fiber.Ctx) error {
 	hashedPassword := utils.HashPassword(payload.Password)
 
 	newUser := models.User{
-		Name:     payload.Name,
-		Email:    strings.ToLower(payload.Email),
-		Password: hashedPassword,
+		UserName:  payload.UserName,
+		FirstName: payload.FirstName,
+		LastName:  payload.LastName,
+		Email:     strings.ToLower(payload.Email),
+		Phone:     payload.Phone,
+		Password:  hashedPassword,
 	}
 
 	// create new user
@@ -171,6 +174,106 @@ func SignInUser(c *fiber.Ctx) error {
 
 	isSuccess = true
 	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"token": access_token}))
+}
+
+// SignInByPhone func Login by phone number
+// @Description Login by phone number
+// @Summary Login by phone number
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param Payload body models.SignInInput true "Login Data"
+// @Success 200 {object} models.ResponseSuccessToken "Ok"
+// @Failure 400 {object} models.ResponseError "Error"
+// @Router /auth/loginbyphone [post]
+func SignInByPhone(c *fiber.Ctx) error {
+	log.Println("auth controller : start signin ")
+
+	if dbconn.DB == nil {
+		return errors.New("database connection is nil")
+	}
+	var payload *models.SignInByPhone
+	var isSuccess bool = false
+
+	if err := c.BodyParser(&payload); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err.Error()}))
+	}
+
+	fmt.Printf("auth controller : phone = %s\n", payload.Phone)
+	fmt.Printf("auth controller : password = %s\n", payload.Password)
+
+	errors := models.ValidateStruct(payload)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": errors}))
+		//return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "failed", "message": errors})
+	}
+
+	var user models.User
+	result := dbconn.DB.First(&user, "email = ?", strings.ToLower(payload.Email))
+	if result.Error != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Invalid email or Password"}))
+	}
+
+	if err := utils.ComparePassword(user.Password, payload.Password); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Invalid Password"}))
+	}
+
+	config, _ := config.LoadConfig(".")
+
+	// Generate Token
+	access_token, err := utils.CreateToken(config.AccessTokenExpiresIn, user.ID, config.AccessTokenPrivateKey)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err.Error()}))
+	}
+
+	refresh_token, err := utils.CreateToken(config.RefreshTokenExpiresIn, user.ID, config.RefreshTokenPrivateKey)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Generate Refresh Token Failed"}))
+	}
+	// set cookie
+	c.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    access_token,
+		Path:     "/",
+		MaxAge:   config.AccessTokenMaxAge * 60,
+		Secure:   false,
+		HTTPOnly: true,
+		Domain:   config.DomainHost,
+	})
+
+	c.Cookie(&fiber.Cookie{
+		Name:     "refreshtoken",
+		Value:    refresh_token,
+		Path:     "/",
+		MaxAge:   config.RefreshTokenMaxAge * 60,
+		Secure:   false,
+		HTTPOnly: true,
+		Domain:   config.DomainHost,
+	})
+
+	c.Cookie(&fiber.Cookie{
+		Name:     "logged_in",
+		Value:    "true",
+		Path:     "/",
+		MaxAge:   config.AccessTokenMaxAge * 60,
+		Secure:   false,
+		HTTPOnly: true,
+		Domain:   config.DomainHost,
+	})
+
+	c.Cookie(&fiber.Cookie{
+		Name:     "user_id",
+		Value:    user.ID.String(),
+		Path:     "/",
+		MaxAge:   config.AccessTokenMaxAge * 60,
+		Secure:   false,
+		HTTPOnly: true,
+		Domain:   config.DomainHost,
+	})
+
+	isSuccess = true
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"token": access_token}))
+
 }
 
 // LogoutUser func Logout

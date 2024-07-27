@@ -10,5 +10,6 @@ func AuthRoute(route fiber.Router) {
 	// routes "/api/auth"
 	route.Post("/register", controllers.SignUpUser)
 	route.Post("/login", controllers.SignInUser)
+	route.Post("/loginbyphone", controllers.SignInByPhone)
 	route.Get("/logout", middleware.DeserializeUser, controllers.LogoutUser)
 }

@@ -105,11 +105,14 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	updateUser := models.User{
-		Name:     payload.Name,
-		Email:    strings.ToLower(payload.Email),
-		Password: hashedPassword,
-		Role:     &payload.Role,
-		Verified: &payload.Verified,
+		UserName:  payload.UserName,
+		FirstName: payload.FirstName,
+		LastName:  payload.LastName,
+		Email:     strings.ToLower(payload.Email),
+		Phone:     payload.Phone,
+		Password:  hashedPassword,
+		Role:      &payload.Role,
+		Verified:  &payload.Verified,
 	}
 
 	result = dbconn.DB.Model(&models.User{}).Where("id = ?", id).Updates(&updateUser)
