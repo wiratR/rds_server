@@ -2,24 +2,28 @@ import 'package:flutter/material.dart';
 import '../../components/appbar/custom_app_bar.dart';
 import '../../components/bottomsheet/forgot_password_sheet.dart';
 import '../../constants.dart';
-// import '../../routes/app_routes.dart';
+import '../../service/auth/auth_service.dart';
+import '../main/home/home_screen.dart';
 
 class PasswordScreen extends StatefulWidget {
   final String phoneNumber; // Add this line to accept the phone number
 
-  PasswordScreen({required this.phoneNumber}); // Update the constructor
+  const PasswordScreen(
+      {super.key, required this.phoneNumber}); // Update the constructor
 
   @override
+  // ignore: library_private_types_in_public_api
   _PasswordScreenState createState() => _PasswordScreenState();
 }
 
 class _PasswordScreenState extends State<PasswordScreen> {
+  final AuthService authService = AuthService();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
   // void _sendOtp() {
   //   // Implement your OTP sending logic here
-  //   print('Sending OTP to: ${widget.phoneNumber}');
+  //   debugPrint('Sending OTP to: ${widget.phoneNumber}');
   //   // Navigate to the OTP verification screen
   //   Navigator.pushNamed(
   //     context,
@@ -28,15 +32,37 @@ class _PasswordScreenState extends State<PasswordScreen> {
   //   );
   // }
 
-  void _login() {
+  Future<void> _login() async {
     // Add your login logic here
     // After login, send OTP
     // _sendOtp();
-    print('login with phone : ${widget.phoneNumber}');
-    if ((widget.phoneNumber == '+66809921372') &
-        (_passwordController.text == '12345678')) {
-      print('login conplete');
-      Navigator.pushNamed(context, '/home');
+    debugPrint('login with phone : ${widget.phoneNumber}');
+    debugPrint('login with password : ${_passwordController.text}');
+
+    String? token = await authService.loginByPhone(
+      widget.phoneNumber,
+      _passwordController.text,
+    );
+
+    if (token != null) {
+      // Navigate to next screen or handle successful login
+      debugPrint('Login successful! Token: $token');
+      // Navigate to the home screen on success
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    } else {
+      // Show error message or handle login failure
+      debugPrint('Login failed');
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login failed. Please try again.'),
+          duration: Duration(seconds: 3),
+        ),
+      );
     }
   }
 
@@ -62,15 +88,15 @@ class _PasswordScreenState extends State<PasswordScreen> {
                     'assets/pages/shield_lock_icon.png', // Replace with your icon asset
                     height: 140,
                   ),
-                  SizedBox(height: 20),
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Enter your password',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _passwordController,
               obscureText: !_isPasswordVisible,
@@ -90,37 +116,37 @@ class _PasswordScreenState extends State<PasswordScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {
                   showModalBottomSheet(
                     context: context,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(16.0),
                       ),
                     ),
                     isScrollControlled: true,
-                    builder: (context) => ForgotPasswordSheet(),
+                    builder: (context) => const ForgotPasswordSheet(),
                   );
                 },
-                child: Text(
+                child: const Text(
                   'Forgot password?',
                   style: TextStyle(color: Colors.blue),
                 ),
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: _login,
-              child: Text('Login'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: kPrimaryColor, // Replace with your color
-                minimumSize: Size(double.infinity, 50),
+                minimumSize: const Size(double.infinity, 50),
                 foregroundColor: Colors.white,
               ),
+              child: const Text('Login'),
             ),
           ],
         ),

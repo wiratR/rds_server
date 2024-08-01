@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,9 @@ func GetAllUsers(c *fiber.Ctx) error {
 // @Router /users/me [get]
 func GetMe(c *fiber.Ctx) error {
 	id := c.Cookies("user_id")
+
+	fmt.Printf("user controller : id = %s\n", id)
+
 	var user models.User
 	result := dbconn.DB.Find(&user, uuid.MustParse(id))
 
@@ -62,7 +66,7 @@ func GetUserById(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "the given ID is not found"}))
 	}
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"user": gin.H{"user": user}}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"user": models.FilterUserRecord(&user)}))
 }
 
 // Update user detail

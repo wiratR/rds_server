@@ -6,9 +6,10 @@ import '../../constants.dart';
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneNumber;
 
-  OtpVerificationScreen({required this.phoneNumber});
+  const OtpVerificationScreen({super.key, required this.phoneNumber});
 
   @override
+  // ignore: library_private_types_in_public_api
   _OtpVerificationScreenState createState() => _OtpVerificationScreenState();
 }
 
@@ -19,7 +20,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   void _verifyOtp() {
     if (_formKey.currentState!.validate()) {
       // Perform OTP verification logic here
-      print('Verifying OTP: $_otpCode for phone number: ${widget.phoneNumber}');
+      debugPrint(
+          'Verifying OTP: $_otpCode for phone number: ${widget.phoneNumber}');
       // Navigate to the next screen upon successful OTP verification
       Navigator.pushNamed(context, '/password');
     }
@@ -39,18 +41,18 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 60),
-              Text(
+              const SizedBox(height: 60),
+              const Text(
                 'Verify OTP',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 80),
+              const SizedBox(height: 80),
               Form(
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
                     TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'OTP Code',
                         border: OutlineInputBorder(),
                       ),
@@ -65,15 +67,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         _otpCode = value;
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _verifyOtp,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kPrimaryColor,
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                         foregroundColor: Colors.white,
                       ),
-                      child: Text('Verify'),
+                      child: const Text('Verify'),
                     ),
                   ],
                 ),

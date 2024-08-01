@@ -22,9 +22,9 @@ type User struct {
 }
 
 type SignUpInput struct {
-	UserName        string `json:"username" validate:"required"`
-	FirstName       string `json:"firstname" validate:"required"`
-	LastName        string `json:"lastname" validate:"required"`
+	UserName        string `json:"userName" validate:"required"`
+	FirstName       string `json:"firstName" validate:"required"`
+	LastName        string `json:"lastName" validate:"required"`
 	Email           string `json:"email" validate:"required"`
 	Phone           string `json:"phone" validate:"required"`
 	Password        string `json:"password" validate:"required,min=8"`
@@ -43,9 +43,9 @@ type SignInByPhone struct {
 
 type UserResponse struct {
 	ID        uuid.UUID `json:"id,omitempty"`
-	UserName  string    `json:"username,omitempty"`
-	FirstName string    `json:"firstname,omitempty"`
-	LastName  string    `json:"lastname,omitempty"`
+	UserName  string    `json:"userName,omitempty"`
+	FirstName string    `json:"firstName,omitempty"`
+	LastName  string    `json:"lastName,omitempty"`
 	Email     string    `json:"email,omitempty"`
 	Phone     string    `json:"phone,omitempty"`
 	Role      string    `json:"role,omitempty"`
@@ -54,14 +54,19 @@ type UserResponse struct {
 }
 
 type UserUpdate struct {
-	UserName  string `json:"username,omitempty"`
-	FirstName string `json:"firstname,omitempty"`
-	LastName  string `json:"lastname,omitempty"`
+	UserName  string `json:"userName,omitempty"`
+	FirstName string `json:"firstName,omitempty"`
+	LastName  string `json:"lastName,omitempty"`
 	Email     string `json:"email,omitempty"`
 	Phone     string `json:"phone,omitempty"`
 	Password  string `json:"password,omitempty"`
 	Role      string `json:"role,omitempty"`
 	Verified  bool   `json:"verified,omitempty"`
+}
+
+type SignInResponse struct {
+	Token       string       `json:"token"`
+	UserDetails UserResponse `json:"user"`
 }
 
 func FilterUserRecord(user *User) UserResponse {

@@ -16,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _submit() {
     if (_formKey.currentState!.validate()) {
       // Perform login logic
-      print('Phone number: ${number.phoneNumber}');
+      debugPrint('Phone number: ${number.phoneNumber}');
       // Navigate to the PasswordScreen
       // Navigate to the PasswordScreen with the phone number
       Navigator.pushNamed(
@@ -35,18 +35,18 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
               Image.asset('assets/logo.png',
                   height: 60), // Replace with your logo
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Image.asset('assets/pages/phone.png',
                   height: 220), // Replace with your phone illustration
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Enter your mobile number',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 80),
+              const SizedBox(height: 50),
               Form(
                 key: _formKey,
                 child: Column(
@@ -55,12 +55,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       onInputChanged: (PhoneNumber number) {
                         this.number = number;
                       },
-                      selectorConfig: SelectorConfig(
+                      selectorConfig: const SelectorConfig(
                         selectorType: PhoneInputSelectorType.DROPDOWN,
                       ),
                       initialValue: number,
                       textFieldController: TextEditingController(),
-                      inputDecoration: InputDecoration(
+                      inputDecoration: const InputDecoration(
                         labelText: 'Mobile number',
                         border: OutlineInputBorder(),
                       ),
@@ -71,22 +71,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _submit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kPrimaryColor,
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                         foregroundColor: Colors.white,
                       ),
-                      child: Text('Continue'),
+                      child: const Text('Continue'),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
-              Text('or continue using'),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
+              const Text('or continue using'),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -107,17 +107,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // Sign Up link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Don\'t have an account?'),
+                  const Text('Don\'t have an account?'),
                   TextButton(
                     onPressed: () {
                       Navigator.pushNamed(context, '/register');
                     },
-                    child: Text('Create New'),
+                    child: const Text('Create New'),
                   ),
                 ],
               ),

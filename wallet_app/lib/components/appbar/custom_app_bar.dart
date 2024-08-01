@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../screen/login/login_screen.dart';
+import '../../service/auth/auth_service.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String logoAssetPath;
   final bool showBackButton;
   final bool showIconLogout;
+  final AuthService authService = AuthService();
 
   CustomAppBar({
+    super.key,
     required this.logoAssetPath,
     this.showBackButton = false,
     this.showIconLogout = false,
@@ -19,7 +24,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -50,9 +55,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: showIconLogout
           ? [
               IconButton(
-                icon: Icon(Icons.logout),
-                onPressed: () {
+                icon: const Icon(Icons.logout),
+                onPressed: () async {
                   // Add your logout functionality here
+                  await authService.logout();
+                  Navigator.pushReplacement(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                  );
                 },
               ),
             ]
@@ -61,5 +72,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

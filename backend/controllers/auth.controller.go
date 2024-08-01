@@ -182,8 +182,8 @@ func SignInUser(c *fiber.Ctx) error {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param Payload body models.SignInInput true "Login Data"
-// @Success 200 {object} models.ResponseSuccessToken "Ok"
+// @Param Payload body models.SignInByPhone true "Login Data"
+// @Success 200 {object} models.SignInResponse "Ok"
 // @Failure 400 {object} models.ResponseError "Error"
 // @Router /auth/loginbyphone [post]
 func SignInByPhone(c *fiber.Ctx) error {
@@ -209,7 +209,7 @@ func SignInByPhone(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	result := dbconn.DB.First(&user, "email = ?", strings.ToLower(payload.Email))
+	result := dbconn.DB.First(&user, "phone = ?", strings.ToLower(payload.Phone))
 	if result.Error != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Invalid email or Password"}))
 	}
@@ -271,8 +271,16 @@ func SignInByPhone(c *fiber.Ctx) error {
 		Domain:   config.DomainHost,
 	})
 
+	id := c.Cookies("user_id")
+
+	fmt.Printf("authe controller check: id = %s\n", id)
+
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"token": access_token}))
+	// return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"token": access_token}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, models.SignInResponse{
+		Token:       access_token,
+		UserDetails: models.FilterUserRecord(&user),
+	}))
 
 }
 

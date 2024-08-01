@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ForgotPasswordSheet extends StatelessWidget {
-  const ForgotPasswordSheet({Key? key}) : super(key: key);
+  const ForgotPasswordSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class ForgotPasswordSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(
+              const Text(
                 'Forgot your password?',
                 style: TextStyle(
                   fontSize: 18.0,
@@ -23,7 +23,7 @@ class ForgotPasswordSheet extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text(
+                child: const Text(
                   'Done',
                   style: TextStyle(
                     color: Colors.blue,
@@ -32,7 +32,7 @@ class ForgotPasswordSheet extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           TextField(
             decoration: InputDecoration(
               labelText: 'Email',
@@ -42,28 +42,30 @@ class ForgotPasswordSheet extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {
               // Handle send reset link
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF6C63FF), // Replace with your color
+              backgroundColor:
+                  const Color(0xFF6C63FF), // Replace with your color
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              minimumSize: Size(double.infinity, 48.0), // Full-width button
+              minimumSize:
+                  const Size(double.infinity, 48.0), // Full-width button
             ),
-            child: Text('Send reset link'),
+            child: const Text('Send reset link'),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           Center(
             child: TextButton(
               onPressed: () {
                 // Handle use mobile instead
               },
-              child: Text('Use mobile instead'),
+              child: const Text('Use mobile instead'),
             ),
           ),
         ],

@@ -1,5 +1,4 @@
 class AppConfig {
-  // Replace with your API base URL
-  static const String ksherPayUrl = 'https://api.mch.ksher.net/KsherPay';
-  static const String baseUrl = 'https://api.mch.ksher.net/KsherPay';
+  // Replace with your API base URL http://127.0.0.1:8000/api/
+  static const String baseUrl = 'http://127.0.0.1:8000/api';
 }

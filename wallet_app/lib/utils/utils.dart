@@ -14,7 +14,8 @@ String bytesToHex(List<int> bytes) {
 Uint8List hexDecode(String hexString) {
   // Ensure the hex string has an even length
   if (hexString.length % 2 != 0) {
-    throw FormatException('Invalid hexadecimal string, length must be even.');
+    throw const FormatException(
+        'Invalid hexadecimal string, length must be even.');
   }
 
   // Decode hex string to bytes
@@ -43,7 +44,7 @@ String generateTimeStamp() {
 
 String generateMchOrderNo() {
   final DateTime now = DateTime.now();
-  final DateTime oneDayAgo = now.subtract(Duration(days: 1));
+  final DateTime oneDayAgo = now.subtract(const Duration(days: 1));
   return formatDate(oneDayAgo, [yyyy, mm, dd, HH, nn, ss]);
 }
 
@@ -67,4 +68,20 @@ String parsePEMPublic(String pem) {
       .replaceAll('-----BEGIN PUBLIC KEY-----', '')
       .replaceAll('-----END PUBLIC KEY-----', '')
       .replaceAll('\n', '');
+}
+
+List<String> splitName(String fullName) {
+  List<String> nameParts = fullName.split(' ');
+  if (nameParts.length >= 2) {
+    String firstName = nameParts.first;
+    String lastName = nameParts.sublist(1).join(' ');
+    return [firstName, lastName];
+  } else {
+    return [fullName, ''];
+  }
+}
+
+String extractUsername(String email) {
+  List<String> emailParts = email.split('@');
+  return emailParts[0];
 }

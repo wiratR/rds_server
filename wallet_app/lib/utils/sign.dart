@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:fast_rsa/fast_rsa.dart';
+import 'package:flutter/foundation.dart';
 import 'utils.dart';
 
 Future<void> signAndVerify(
@@ -9,10 +10,10 @@ Future<void> signAndVerify(
   List<int> signatureBytes = base64.decode(signature);
   // Convert the bytes to a hexadecimal string using the custom function
   String hexSignature = bytesToHex(signatureBytes);
-  print("Data after sign (Hex) = $hexSignature\n");
+  debugPrint("Data after sign (Hex) = $hexSignature\n");
 
   // var isVerified = await RSA.verifyPSS(
   //     signature, stgTosign, Hash.MD5, SaltLength.AUTO, publicKeyPem);
 
-  // print("verify result = $isVerified\n");
+  // debugPrint("verify result = $isVerified\n");
 }

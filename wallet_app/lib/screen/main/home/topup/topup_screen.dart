@@ -40,12 +40,13 @@ Future<void> _handleNativePay(
       totalFee: selectedAmount,
     );
     // // Handle the response
-    // print('Response: ${response.toJson()}');
+    // debugPrint('Response: ${response.toJson()}');
     // Handle the response and navigate to the new screen
-    // print('Response: ${response.toJson()}');
+    // debugPrint('Response: ${response.toJson()}');
 
     if (isPromtPaySelected) {
       Navigator.push(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (context) => PromptpayScreen(
@@ -55,7 +56,7 @@ Future<void> _handleNativePay(
       );
     }
   } catch (e) {
-    print('Error: $e');
+    debugPrint('Error: $e');
   }
 }
 
@@ -85,7 +86,7 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
       // await rootBundle.loadString('assets/key/public_key.pem');
       setState(() {}); // Trigger a rebuild to display the content
     } catch (e) {
-      print('Error loading asset: $e');
+      debugPrint('Error loading asset: $e');
     }
   }
 
@@ -102,7 +103,7 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Top-up Amount', style: TextStyle(fontSize: 18)),
+            const Text('Top-up Amount', style: TextStyle(fontSize: 18)),
             Wrap(
               spacing: 10,
               children: [100, 200, 500, 1000].map((amount) {
@@ -117,10 +118,10 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
                 );
               }).toList(),
             ),
-            SizedBox(height: 20),
-            Text('Select Payment Method', style: TextStyle(fontSize: 18)),
+            const SizedBox(height: 20),
+            const Text('Select Payment Method', style: TextStyle(fontSize: 18)),
             CheckboxListTile(
-              title: Text('Credit/Debit Card'),
+              title: const Text('Credit/Debit Card'),
               value: isCardSelected,
               onChanged: (bool? value) {
                 setState(() {
@@ -129,7 +130,7 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
               },
             ),
             CheckboxListTile(
-              title: Text('Promtpay'),
+              title: const Text('Promtpay'),
               value: isPromtPaySelected,
               onChanged: (bool? value) {
                 setState(() {
@@ -138,7 +139,7 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
               },
             ),
             CheckboxListTile(
-              title: Text('Bank Transfer'),
+              title: const Text('Bank Transfer'),
               value: isBankTransferSelected,
               onChanged: (bool? value) {
                 setState(() {
@@ -146,13 +147,13 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () async {
                   // Validate selectedAmount
                   if (selectedAmount == null || selectedAmount! <= 0) {
-                    print('Invalid amount selected.');
+                    debugPrint('Invalid amount selected.');
                     // Optionally, show a snackbar or dialog to inform the user
                     return;
                   }
@@ -161,15 +162,15 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
                   if (!isCardSelected &&
                       !isPromtPaySelected &&
                       !isBankTransferSelected) {
-                    print('No payment method selected.');
+                    debugPrint('No payment method selected.');
                     // Optionally, show a snackbar or dialog to inform the user
                     return;
                   }
                   // Handle top-up logic here
-                  print('Top-up Amount: $selectedAmount');
-                  print('Credit/Debit Card: $isCardSelected');
-                  print('Promtpay: $isPromtPaySelected');
-                  print('Bank Transfer: $isBankTransferSelected');
+                  debugPrint('Top-up Amount: $selectedAmount');
+                  debugPrint('Credit/Debit Card: $isCardSelected');
+                  debugPrint('Promtpay: $isPromtPaySelected');
+                  debugPrint('Bank Transfer: $isBankTransferSelected');
 
                   try {
                     // Handle native payment logic with selected options
@@ -184,11 +185,11 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
                     );
                   } catch (e) {
                     // Log error and provide user feedback
-                    print('Error: $e');
+                    debugPrint('Error: $e');
                     // Optionally, show a snackbar or dialog to inform the user
                   }
                 },
-                child: Text('Top Up'),
+                child: const Text('Top Up'),
               ),
             ),
           ],

@@ -8,9 +8,8 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       onGenerateRoute: AppRoutes.getRoutes,
-      // Define more MaterialApp properties as needed
     );
   }
 }

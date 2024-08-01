@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class CardScreen extends StatefulWidget {
+  const CardScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _CardScreenState createState() => _CardScreenState();
 }
 
@@ -34,7 +37,7 @@ class _CardScreenState extends State<CardScreen> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_countdown > 0) {
           _countdown--;
@@ -65,15 +68,15 @@ class _CardScreenState extends State<CardScreen> {
                 version: QrVersions.auto,
                 size: qrSize,
               ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Plase Tap this QR pn GATE',
               style: TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Refreshing in $_countdown seconds',
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),

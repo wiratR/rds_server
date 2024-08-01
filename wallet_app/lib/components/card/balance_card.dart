@@ -7,7 +7,8 @@ class BalanceCard extends StatelessWidget {
   // final String expiryDate;
   final double balance;
 
-  BalanceCard({
+  const BalanceCard({
+    super.key,
     // required this.cardHolder,
     // required this.cardNumber,
     // required this.expiryDate,
@@ -22,9 +23,9 @@ class BalanceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Container(
-        padding: EdgeInsets.all(50),
+        padding: const EdgeInsets.all(50),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             colors: [kPrimaryColor, kPrimaryColor],
             begin: Alignment.topLeft,
             end: Alignment.centerLeft,
@@ -34,23 +35,23 @@ class BalanceCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Balance',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               '\$${balance.toStringAsFixed(2)}',
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),

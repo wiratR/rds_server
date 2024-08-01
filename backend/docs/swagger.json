@@ -61,6 +61,46 @@
                 }
             }
         },
+        "/auth/loginbyphone": {
+            "post": {
+                "description": "Login by phone number",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login by phone number",
+                "parameters": [
+                    {
+                        "description": "Login Data",
+                        "name": "Payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SignInByPhone"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "schema": {
+                            "$ref": "#/definitions/models.SignInResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/logout": {
             "get": {
                 "description": "logout",
@@ -316,6 +356,21 @@
                 }
             }
         },
+        "models.SignInByPhone": {
+            "type": "object",
+            "required": [
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SignInInput": {
             "type": "object",
             "required": [
@@ -331,19 +386,36 @@
                 }
             }
         },
+        "models.SignInResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.UserResponse"
+                }
+            }
+        },
         "models.SignUpInput": {
             "type": "object",
             "required": [
                 "email",
-                "name",
+                "firstName",
+                "lastName",
                 "password",
-                "passwordConfirm"
+                "passwordConfirm",
+                "phone",
+                "userName"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "name": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
                     "type": "string"
                 },
                 "password": {
@@ -353,6 +425,12 @@
                 "passwordConfirm": {
                     "type": "string",
                     "minLength": 8
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
                 }
             }
         },
@@ -365,20 +443,28 @@
                 "email": {
                     "type": "string"
                 },
+                "firstName": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
-                "name": {
-                    "description": "ID     uint   `gorm:\"primary_key\"`",
+                "lastName": {
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "role": {
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "userName": {
                     "type": "string"
                 },
                 "verified": {
@@ -395,16 +481,25 @@
                 "email": {
                     "type": "string"
                 },
+                "firstName": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
-                "name": {
+                "lastName": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 },
                 "role": {
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                },
+                "userName": {
                     "type": "string"
                 }
             }
@@ -415,13 +510,22 @@
                 "email": {
                     "type": "string"
                 },
-                "name": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string"
                 },
+                "phone": {
+                    "type": "string"
+                },
                 "role": {
+                    "type": "string"
+                },
+                "userName": {
                     "type": "string"
                 },
                 "verified": {

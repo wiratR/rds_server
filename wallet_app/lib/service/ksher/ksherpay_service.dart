@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:date_format/date_format.dart';
 import 'package:fast_rsa/fast_rsa.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../../utils/utils.dart';
 import 'package:convert/convert.dart';
@@ -11,8 +11,8 @@ const String payDomain = "https://api.mch.ksher.net/KsherPay";
 const String gateDomain = "https://gateway.ksher.com/api";
 const String version = "v3.0.0"; // SDK version
 
-void printResponseStatusCode(http.Response response) {
-  print('response statusCode: ${response.statusCode}');
+void debugPrintResponseStatusCode(http.Response response) {
+  debugPrint('response statusCode: ${response.statusCode}');
 }
 
 class HttpException implements Exception {
@@ -46,10 +46,10 @@ class Client {
 
   // Factory constructor to create a new Client instance
   factory Client.newClient(String appId, String privateKey, String publicKey) {
-    print("--create new client ---\n");
-    print("app id : $appId\n");
-    print("privateKey : $privateKey\n");
-    print("publicKey : $publicKey\n");
+    debugPrint("--create new client ---\n");
+    debugPrint("app id : $appId\n");
+    debugPrint("privateKey : $privateKey\n");
+    debugPrint("publicKey : $publicKey\n");
 
     return Client(
       appId: appId,
@@ -91,8 +91,7 @@ class Client {
     if (deviceId != null) postValue['device_id'] = deviceId;
     if (imgType != null) postValue['img_type'] = imgType;
 
-    return ksherPost(
-        payDomain + "/native_pay", postValue, privateKey, publicKey);
+    return ksherPost("$payDomain/native_pay", postValue, privateKey, publicKey);
   }
 }
 
@@ -177,15 +176,15 @@ String getTimeStamp() {
 Future<String> ksherSign(
     Map<String, String> messageJson, String privateKeyPem) async {
   String strTosign = concatJson(messageJson);
-  print("message for sign  = $strTosign\n");
-  print("private Key = $privateKeyPem\n");
+  debugPrint("message for sign  = $strTosign\n");
+  debugPrint("private Key = $privateKeyPem\n");
   var signature = await RSA.signPKCS1v15(strTosign, Hash.MD5, privateKeyPem);
-  print("signature = $signature\n");
+  debugPrint("signature = $signature\n");
   // Convert the signature to bytes
   List<int> signatureBytes = base64.decode(signature);
   // Convert the bytes to a hexadecimal string using the custom function
   String hexSignature = bytesToHex(signatureBytes);
-  print("sign (Hex) = $hexSignature\n");
+  debugPrint("sign (Hex) = $hexSignature\n");
   return hexSignature;
 }
 
@@ -197,26 +196,26 @@ Future<bool> ksherVerify(message, String pubkey) async {
   List<int> signatureBytes = hex.decode(res.sign);
   String decodedString = String.fromCharCodes(signatureBytes);
 
-  print('sign : ${decodedString}');
-  print('data : ${strToVerify}');
-  print('public key : ${pubkey}');
+  debugPrint('sign : $decodedString');
+  debugPrint('data : $strToVerify');
+  debugPrint('public key : $pubkey');
 
-  // debugPrint(decodedString);
-  // debugPrint(strToVerify);
+  // debugdebugPrint(decodedString);
+  // debugdebugPrint(strToVerify);
 
   try {
     bool isVerified =
         await RSA.verifyPKCS1v15(res.sign, strToVerify, Hash.MD5, pubkey);
 
     if (isVerified) {
-      print('Sign verification Passed...');
+      debugPrint('Sign verification Passed...');
       return true;
     } else {
-      print('Sign verification failed...');
+      debugPrint('Sign verification failed...');
       return false;
     }
   } catch (e) {
-    print('Sign verification failed...');
+    debugPrint('Sign verification failed...');
     return false;
   }
 }
@@ -244,8 +243,8 @@ Future<KsherResp> ksherPost(
 
     // Create the request
     var uri = Uri.parse(url);
-    print("url for post : $uri\n");
-    print("post value  : $postValue\n");
+    debugPrint("url for post : $uri\n");
+    debugPrint("post value  : $postValue\n");
     var response = await http.post(
       uri,
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -256,7 +255,7 @@ Future<KsherResp> ksherPost(
       final responseData = json.decode(response.body);
       // verify sign
       if (responseData['code'] == 0) {
-        // print('start --- verify sign -- ');
+        // debugPrint('start --- verify sign -- ');
         // bool isValid = await ksherVerify(responseData, publicKeyData);
         // if (isValid) {
         //   return KsherResp.fromJson(responseData);
@@ -266,11 +265,11 @@ Future<KsherResp> ksherPost(
         return KsherResp.fromJson(responseData);
       }
     } else {
-      print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      debugPrint('Error: ${response.statusCode} - ${response.reasonPhrase}');
       throw Exception('Failed to post data');
     }
   } catch (e) {
-    print('Error: $e');
+    debugPrint('Error: $e');
   }
 
   return response;

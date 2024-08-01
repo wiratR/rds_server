@@ -16,7 +16,7 @@ class AppRoutes {
           builder: (_) => PasswordScreen(phoneNumber: args.phoneNumber),
         );
       case '/register':
-        return MaterialPageRoute(builder: (_) => RegisterScreen());
+        return MaterialPageRoute(builder: (_) => const RegisterScreen());
       case '/otp-verification':
         final args = settings.arguments as OtpVerificationArguments;
         return MaterialPageRoute(

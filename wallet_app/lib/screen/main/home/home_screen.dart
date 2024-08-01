@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:wallet_app/constants.dart';
 import '../../../components/appbar/custom_app_bar.dart';
 import '../../../components/card/balance_card.dart';
+import '../../../models/user/user_model.dart';
+import '../../../service/auth/auth_service.dart';
+import '../../../service/user/user_service.dart';
 import '../card/card_screen.dart';
 import '../history/history_screen.dart';
 import '../more/more_screen.dart';
@@ -15,18 +18,33 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  late double balance = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  double balance = 0;
+  String? token;
+  late UserService userService;
+  UserDetails? userDetails;
+  UserResponse? userResponse;
+  late AuthService authService;
+  String? userId;
 
   @override
   void initState() {
     super.initState();
     balance = _generateRandomBalance();
+    authService = AuthService();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _initializeServices();
+    });
+  }
+
+  Future<void> _initializeServices() async {
+    token = await authService.getToken();
+    if (token != null) {
+      userId = await authService.getUserId();
+      debugPrint('got a user id = $userId');
+
+      userService = UserService(token!);
+      _fetchUserDetails(userId!);
+    }
   }
 
   double _generateRandomBalance() {
@@ -37,12 +55,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _handleAddMoney() {
     // Implement add money functionality
-    print('Add Money pressed');
-    // Navigate to Term Condition Screen when tapped
+    debugPrint('Add Money pressed');
+    // Navigate to TopUpScreen when tapped
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => TopUpScreen()),
     );
+  }
+
+  Future<void> _fetchUserDetails(String userId) async {
+    // Implement your logic to fetch user details here
+    debugPrint('start _fetchUserDetails');
+    userResponse = await userService.getUserById(userId);
+    if (userResponse != null) {
+      debugPrint('got a userResponse');
+      setState(() {
+        userDetails = UserDetails.fromUserResponse(userResponse!);
+      });
+    }
   }
 
   @override
@@ -88,11 +118,13 @@ class _HomeScreenState extends State<HomeScreen> {
       case 0:
         return _buildHomeContent();
       case 1:
-        return HistoryScreen(); // Navigate to History Screen
+        return const HistoryScreen(); // Navigate to History Screen
       case 2:
-        return CardScreen(); // Navigate to Card Screen
+        return const CardScreen(); // Navigate to Card Screen
       case 3:
-        return MoreScreen(); // Navigate to More Screen
+        return userDetails != null
+            ? MoreScreen(userDetails: userDetails!)
+            : const Center(child: CircularProgressIndicator());
       default:
         return Container();
     }
@@ -109,13 +141,22 @@ class _HomeScreenState extends State<HomeScreen> {
               balance: balance,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _handleAddMoney,
-            child: Text('Add Money'),
+            child: const Text('Add Money'),
           ),
         ],
       ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    if (index == 3) {
+      _fetchUserDetails(userId!);
+    }
   }
 }

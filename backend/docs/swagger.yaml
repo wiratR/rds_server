@@ -36,6 +36,16 @@ definitions:
       status:
         type: string
     type: object
+  models.SignInByPhone:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
   models.SignInInput:
     properties:
       email:
@@ -46,11 +56,20 @@ definitions:
     - email
     - password
     type: object
+  models.SignInResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/models.UserResponse'
+    type: object
   models.SignUpInput:
     properties:
       email:
         type: string
-      name:
+      firstName:
+        type: string
+      lastName:
         type: string
       password:
         minLength: 8
@@ -58,11 +77,18 @@ definitions:
       passwordConfirm:
         minLength: 8
         type: string
+      phone:
+        type: string
+      userName:
+        type: string
     required:
     - email
-    - name
+    - firstName
+    - lastName
     - password
     - passwordConfirm
+    - phone
+    - userName
     type: object
   models.User:
     properties:
@@ -70,16 +96,21 @@ definitions:
         type: string
       email:
         type: string
+      firstName:
+        type: string
       id:
         type: string
-      name:
-        description: ID     uint   `gorm:"primary_key"`
+      lastName:
         type: string
       password:
+        type: string
+      phone:
         type: string
       role:
         type: string
       updatedAt:
+        type: string
+      userName:
         type: string
       verified:
         type: boolean
@@ -90,24 +121,36 @@ definitions:
         type: string
       email:
         type: string
+      firstName:
+        type: string
       id:
         type: string
-      name:
+      lastName:
+        type: string
+      phone:
         type: string
       role:
         type: string
       updated_at:
+        type: string
+      userName:
         type: string
     type: object
   models.UserUpdate:
     properties:
       email:
         type: string
-      name:
+      firstName:
+        type: string
+      lastName:
         type: string
       password:
         type: string
+      phone:
+        type: string
       role:
+        type: string
+      userName:
         type: string
       verified:
         type: boolean
@@ -150,6 +193,32 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseError'
       summary: login
+      tags:
+      - Auth
+  /auth/loginbyphone:
+    post:
+      consumes:
+      - application/json
+      description: Login by phone number
+      parameters:
+      - description: Login Data
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInByPhone'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ok
+          schema:
+            $ref: '#/definitions/models.SignInResponse'
+        "400":
+          description: Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: Login by phone number
       tags:
       - Auth
   /auth/logout:
