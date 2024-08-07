@@ -56,15 +56,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       String userName = extractUsername(_emailController.text);
       debugPrint('User Name: $userName');
 
-      // Navigate to the Login page
-      Navigator.pushNamed(context, '/');
-
       String? user = await authService.register(
         firstName,
         lastName,
         userName,
-        _emailController.text,
         number.phoneNumber.toString(),
+        _emailController.text,
         _passwordController.text,
         _confirmPasswordController.text,
       );

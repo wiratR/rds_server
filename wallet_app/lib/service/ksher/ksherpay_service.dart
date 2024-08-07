@@ -93,6 +93,45 @@ class Client {
 
     return ksherPost("$payDomain/native_pay", postValue, privateKey, publicKey);
   }
+
+  // https://gateway.ksher.com/api/gateway_pay
+  Future<KsherPayContentResponse> gateWayPay({
+    required String mchOrderNo,
+    required String feeType,
+    // alipay,wechat,linepay,airpay,promptpay,truemoney,card,ktccard,ktc_instal
+    required String channelList,
+    required String mchCode,
+    // After the payment is succeed,
+    // the web page is redirected to this URL.
+    // If merchant leaves this field blank,
+    // the web page will stay on payment page after payment succeed.
+    required String mchRedirectUrl,
+    required String mchRedirectUrlFail,
+    required String productName,
+    required String referUrl,
+    required String device,
+    required int totalFee,
+  }) {
+    var postValue = {
+      'appid': appId,
+      'nonce_str': getNonceStr(4),
+      'time_stamp': getTimeStamp(),
+      'mch_order_no': mchOrderNo,
+      'fee_type': feeType,
+      'channel_list': channelList,
+      'mch_code': mchCode,
+      'mch_redirect_url': mchRedirectUrl,
+      'mch_redirect_url_fail': mchRedirectUrlFail,
+      'product_name': productName,
+      'refer_url': referUrl,
+      'device': device,
+      'total_fee': totalFee.toString()
+    };
+
+    // debugPrint(postValue.toString());
+    return ksherPostGateWay(
+        "$gateDomain/gateway_pay", postValue, privateKey, publicKey);
+  }
 }
 
 class KsherResp {
@@ -145,6 +184,62 @@ class KsherResp {
   @override
   String toString() {
     return 'KsherResp{code: $code, msg: $msg, statusCode: $statusCode, statusMsg: $statusMsg, sign: $sign, version: $version, timeStamp: $timeStamp, data: $data}';
+  }
+}
+
+class KsherPayContentResponse {
+  final int code;
+  final String msg;
+  final PayContentData data;
+  final String sign;
+  final String message;
+
+  KsherPayContentResponse({
+    required this.code,
+    required this.msg,
+    required this.data,
+    required this.sign,
+    required this.message,
+  });
+
+  factory KsherPayContentResponse.fromJson(Map<String, dynamic> json) {
+    return KsherPayContentResponse(
+      code: json['code'],
+      msg: json['msg'],
+      data: PayContentData.fromJson(json['data']),
+      sign: json['sign'],
+      message: json['message'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'code': code,
+      'msg': msg,
+      'data': data.toJson(),
+      'sign': sign,
+      'message': message,
+    };
+  }
+}
+
+class PayContentData {
+  final String payContent;
+
+  PayContentData({
+    required this.payContent,
+  });
+
+  factory PayContentData.fromJson(Map<String, dynamic> json) {
+    return PayContentData(
+      payContent: json['pay_content'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'pay_content': payContent,
+    };
   }
 }
 
@@ -251,6 +346,8 @@ Future<KsherResp> ksherPost(
       body: postValue,
     );
 
+    debugPrint('Response : ${json.decode(response.body)}');
+
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       // verify sign
@@ -263,6 +360,61 @@ Future<KsherResp> ksherPost(
         //   throw Exception('Signature verification failed');
         // }
         return KsherResp.fromJson(responseData);
+      }
+    } else {
+      debugPrint('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      throw Exception('Failed to post data');
+    }
+  } catch (e) {
+    debugPrint('Error: $e');
+  }
+
+  return response;
+}
+
+Future<KsherPayContentResponse> ksherPostGateWay(
+  String url,
+  Map<String, String> postValue,
+  String privateKeyData,
+  String publicKeyData,
+) async {
+  PayContentData payContentData = PayContentData(payContent: '');
+  KsherPayContentResponse response = KsherPayContentResponse(
+    code: -1,
+    msg: '',
+    data: payContentData,
+    sign: '',
+    message: '',
+  );
+  try {
+    // Sign the post data
+    String sign = await ksherSign(postValue, privateKeyData);
+    postValue['sign'] = sign;
+
+    // Create the request
+    var uri = Uri.parse(url);
+    debugPrint("url for post : $uri\n");
+    debugPrint("post value  : $postValue\n");
+    var response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: postValue,
+    );
+
+    debugPrint('Response : ${json.decode(response.body)}');
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      // verify sign
+      if (responseData['code'] == 0) {
+        // debugPrint('start --- verify sign -- ');
+        // bool isValid = await ksherVerify(responseData, publicKeyData);
+        // if (isValid) {
+        //   return KsherPayContentResponse.fromJson(responseData);
+        // } else {
+        //   throw Exception('Signature verification failed');
+        // }
+        return KsherPayContentResponse.fromJson(responseData);
       }
     } else {
       debugPrint('Error: ${response.statusCode} - ${response.reasonPhrase}');

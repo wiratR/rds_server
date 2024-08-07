@@ -41,8 +41,6 @@ class UserService {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $_authToken', // Add the authorization header
     };
-    // debugPrint(url.toString());
-    // debugPrint(headers.toString());
     try {
       final response = await http.get(url, headers: headers);
       if (response.statusCode == 200) {

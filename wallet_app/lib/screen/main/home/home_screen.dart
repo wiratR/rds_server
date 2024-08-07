@@ -1,8 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:wallet_app/constants.dart';
 import '../../../components/appbar/custom_app_bar.dart';
 import '../../../components/card/balance_card.dart';
+import '../../../constants.dart';
 import '../../../models/user/user_model.dart';
 import '../../../service/auth/auth_service.dart';
 import '../../../service/user/user_service.dart';
