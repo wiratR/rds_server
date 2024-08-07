@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import '../../../../../components/appbar/custom_app_bar.dart';
 
 class PaymentCompletionScreen extends StatefulWidget {

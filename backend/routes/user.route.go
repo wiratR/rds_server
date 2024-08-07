@@ -11,5 +11,7 @@ func UserRoute(route fiber.Router) {
 	route.Get("/me", middleware.DeserializeUser, controllers.GetMe)
 	route.Get("/:id", middleware.DeserializeUser, controllers.GetUserById)
 	route.Patch("/update", middleware.DeserializeUser, controllers.UpdateUser)
-	route.Delete("/deactive", middleware.DeserializeUser, controllers.DeleteUser)
+	route.Patch("/update/:id", middleware.DeserializeUser, controllers.UpdateUserById)
+	route.Patch("/updatepassword/:id", middleware.DeserializeUser, controllers.UpdateUserPasswordById)
+	route.Delete("/deactive", middleware.DeserializeUser, controllers.DeleteUserById)
 }

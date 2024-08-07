@@ -14,13 +14,25 @@ class TopUpScreen extends StatefulWidget {
 }
 
 class _TopUpScreenState extends State<TopUpScreen> {
-  int? selectedAmount;
-  bool isCardSelected = false;
+  int? selectedAmount = 100; // Default to 100
+  bool isCardSelected = true; // Default to Credit/Debit Card
   bool isPromtPaySelected = false;
   bool isBankTransferSelected = false;
+  String selectedBank = '';
   String privateKeyContent = '';
   String publicKeyContent = '';
   bool isLoading = false;
+
+  // List<String> banks = ['Kbank', 'KTC', 'BBL']; // Add your bank options here
+  // bbl_deeplink:
+  // kplus: KPLUS:
+  // baybank_deeplink:
+  List<Map<String, String>> banks = [
+    {'name': 'BBL', 'logo': 'assets/pays/bbldeeplink01.png'},
+    {'name': 'Kbank', 'logo': 'assets/pays/kbank_installment02.png'},
+    {'name': 'Krungsri', 'logo': 'assets/pays/krungsri_installment.png'},
+    {'name': 'SCB', 'logo': 'assets/pays/scbeasy.png'},
+  ]; // Add your bank options with logos here
 
   @override
   void initState() {
@@ -52,21 +64,39 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
     int selectedAmount,
     BuildContext context,
   ) async {
+    String chList = '';
+
     Client client = Client(
       appId: "mch38806",
       privateKey: privateKey,
       publicKey: publicKey,
     );
 
+    if (isCardSelected) {
+      chList = 'card';
+    } else {
+      // List<String> banks = ['Kbank', 'KTC', 'BBL']; // Add your bank options here
+      // bbl_deeplink:
+      // kplus: KPLUS:
+      // baybank_deeplink:
+      if (selectedBank == 'BBL') {
+        chList = 'bbl_deeplink';
+      } else if (selectedBank == 'Kbank') {
+        chList = 'kplus';
+      } else if (selectedBank == 'Krungsri') {
+        chList = 'baybank_deeplink';
+      } else {
+        chList = 'scbeasy';
+      }
+      // debug fix 20.00 THB
+      selectedAmount = 2000;
+    }
+
     try {
       KsherPayContentResponse response = await client.gateWayPay(
         mchOrderNo: generateMchOrderNo(),
         feeType: 'THB',
-        channelList: isCardSelected
-            ? 'card'
-            : isBankTransferSelected
-                ? 'bank_transfer'
-                : '',
+        channelList: chList,
         mchCode: generateMchOrderNo(),
         mchRedirectUrl: 'http://localhost/topup/payment-complete/',
         mchRedirectUrlFail: 'http://localhost/topup/payment-failed/',
@@ -171,6 +201,19 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
     );
   }
 
+  void _updatePaymentMethod(String method) {
+    setState(() {
+      isCardSelected = method == 'card';
+      isPromtPaySelected = method == 'promptpay';
+      isBankTransferSelected = method == 'bank_transfer';
+      selectedBank = ''; // Clear selected bank if Bank Transfer is not selected
+      if (method == 'bank_transfer') {
+        isCardSelected = false;
+        isPromtPaySelected = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,50 +242,83 @@ ivlxqdpiHPcOLdQ2RPSx/pORpsUu/E9wz0mYS2PY7hNc2mBgBOQT+wUCAwEAAQ==
                 );
               }).toList(),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             const Text('Select Payment Method', style: TextStyle(fontSize: 18)),
-            CheckboxListTile(
+            ListTile(
+              leading:
+                  Image.asset('assets/pays/cards.png', width: 40, height: 24),
               title: const Text('Credit/Debit Card'),
-              value: isCardSelected,
-              onChanged: (bool? value) {
+              trailing: Checkbox(
+                value: isCardSelected,
+                onChanged: (bool? value) {
+                  setState(() {
+                    // isCardSelected = value!;
+                    _updatePaymentMethod('card');
+                  });
+                },
+              ),
+            ),
+            ListTile(
+              leading: Image.asset('assets/pays/promptpay.png',
+                  width: 40, height: 24),
+              title: const Text('Promptpay'),
+              trailing: Checkbox(
+                value: isPromtPaySelected,
+                onChanged: (bool? value) {
+                  setState(() {
+                    // isPromtPaySelected = value!;
+                    _updatePaymentMethod('promptpay');
+                  });
+                },
+              ),
+            ),
+            const Text('Bank Transfer', style: TextStyle(fontSize: 18)),
+            DropdownButton<String>(
+              hint: const Text('Select Bank'),
+              value: isBankTransferSelected ? selectedBank : null,
+              items: banks.map((bank) {
+                return DropdownMenuItem<String>(
+                  value: bank['name'],
+                  child: Row(
+                    children: [
+                      Image.asset(bank['logo']!, width: 40, height: 24),
+                      const SizedBox(width: 10),
+                      Text(bank['name']!),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
                 setState(() {
-                  isCardSelected = value!;
+                  selectedBank = newValue!;
+                  isBankTransferSelected = true;
+                  isCardSelected = false;
+                  isPromtPaySelected = false;
                 });
               },
+              isExpanded: true,
             ),
-            CheckboxListTile(
-              title: const Text('Promtpay'),
-              value: isPromtPaySelected,
-              onChanged: (bool? value) {
-                setState(() {
-                  isPromtPaySelected = value!;
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: const Text('Bank Transfer'),
-              value: isBankTransferSelected,
-              onChanged: (bool? value) {
-                setState(() {
-                  isBankTransferSelected = value!;
-                });
-              },
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             Center(
               child: ElevatedButton(
                 onPressed: isLoading
                     ? null
                     : () async {
                         if (selectedAmount == null || selectedAmount! <= 0) {
-                          debugPrint('Invalid amount selected.');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Invalid amount selected.')),
+                          );
                           return;
                         }
 
                         if (!isCardSelected &&
                             !isPromtPaySelected &&
                             !isBankTransferSelected) {
-                          debugPrint('No payment method selected.');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('No payment method selected.')),
+                          );
                           return;
                         }
 

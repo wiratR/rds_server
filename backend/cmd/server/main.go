@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
@@ -11,6 +12,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 
 	"github.com/wiratR/rds_server/config"
 	dbconn "github.com/wiratR/rds_server/database"
@@ -79,13 +82,19 @@ func main() {
 	// Auto-migrate the schema
 	dbconn.DB.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
 	// dbconn.DB.Logger = logger.Default.LogMode(logger.Info)
-
 	log.Println("Running Migrations")
-	err = dbconn.DB.AutoMigrate(&models.User{})
-	if err != nil {
-		log.Fatal("Migration Failed:  \n", err.Error())
+	// Perform database migrations
+	if err := dbconn.DB.AutoMigrate(&models.User{}); err != nil {
+		log.Fatalln("failed to migrate database:", err)
 		os.Exit(1)
 	}
+	// AutoMigrate the schema
+	err = dbconn.DB.AutoMigrate(&models.CardType{}, &models.MediaType{}, &models.Station{}, &models.Line{}, &models.ServiceProvider{}, &models.Fare{})
+	if err != nil {
+		log.Fatalf("failed to migrate database: %v", err)
+	}
+
+	seed(dbconn.DB)
 
 	app := fiber.New()
 	// Middleware
@@ -123,6 +132,64 @@ func main() {
 		panic(err)
 	}
 
+}
+
+func seed(db *gorm.DB) {
+	cardTypes := []models.CardType{
+		{ID: uuid.New(), CardId: 1, ShortName: "ADL", Description: "Adult Card", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: uuid.New(), CardId: 2, ShortName: "STU", Description: "Student Card", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+
+	mediaTypes := []models.MediaType{
+		{ID: uuid.New(), MediaTypeId: 1, ShortName: "CSC", Description: "Card", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: uuid.New(), MediaTypeId: 2, ShortName: "CST", Description: "Token", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+
+	stations := []models.Station{
+		{ID: uuid.New(), StationId: 1, ShortName: "STA1", Description: "Station 1", IsCrossLine: false, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: uuid.New(), StationId: 2, ShortName: "STA2", Description: "Station 2", IsCrossLine: true, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+
+	lines := []models.Line{
+		{ID: uuid.New(), LineId: 1, ShortName: "L1", Description: "Line 1", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: uuid.New(), LineId: 2, ShortName: "L2", Description: "Line 2", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+
+	serviceProviders := []models.ServiceProvider{
+		{ID: uuid.New(), ServiceProviderId: 1, ShortName: "SP1", Description: "Service Provider 1", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: uuid.New(), ServiceProviderId: 2, ShortName: "SP2", Description: "Service Provider 2", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+
+	fares := []models.Fare{
+		{ID: uuid.New(), SpId: 1, LineId: 1, StationId: 1, CardTypeId: 1, MediaTypeId: 1, Amount: 100, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+		{ID: uuid.New(), SpId: 2, LineId: 2, StationId: 2, CardTypeId: 2, MediaTypeId: 2, Amount: 200, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+	}
+
+	if err := db.Create(&cardTypes).Error; err != nil {
+		log.Fatalf("failed to seed card types: %v", err)
+	}
+
+	if err := db.Create(&mediaTypes).Error; err != nil {
+		log.Fatalf("failed to seed media types: %v", err)
+	}
+
+	if err := db.Create(&stations).Error; err != nil {
+		log.Fatalf("failed to seed stations: %v", err)
+	}
+
+	if err := db.Create(&lines).Error; err != nil {
+		log.Fatalf("failed to seed lines: %v", err)
+	}
+
+	if err := db.Create(&serviceProviders).Error; err != nil {
+		log.Fatalf("failed to seed service providers: %v", err)
+	}
+
+	if err := db.Create(&fares).Error; err != nil {
+		log.Fatalf("failed to seed fares: %v", err)
+	}
+
+	log.Println("Database seeded successfully")
 }
 
 func HealthCheck(c *fiber.Ctx) error {

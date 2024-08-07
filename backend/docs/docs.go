@@ -202,6 +202,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/delete/{id}": {
+            "delete": {
+                "description": "delete user by user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete user by user id",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ResponseError"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/users/me": {
             "get": {
                 "description": "Get current user.",
@@ -238,7 +270,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Uer"
+                    "User"
                 ],
                 "summary": "update user detail",
                 "parameters": [
@@ -265,6 +297,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/users/update/{id}": {
+            "patch": {
+                "description": "update user detail by user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update user detail by user id",
+                "parameters": [
+                    {
+                        "description": "User Update Data",
+                        "name": "Payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/updatepassword/{id}": {
+            "patch": {
+                "description": "update user password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update user password",
+                "parameters": [
+                    {
+                        "description": "Update user password",
+                        "name": "Payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserPasswordUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/{id}": {
             "get": {
                 "description": "get user infomation by id",
@@ -275,7 +381,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Uer"
+                    "User"
                 ],
                 "summary": "get user infomation by id",
                 "parameters": [
@@ -472,6 +578,20 @@ const docTemplate = `{
                 },
                 "verified": {
                     "type": "boolean"
+                }
+            }
+        },
+        "models.UserPasswordUpdate": {
+            "type": "object",
+            "properties": {
+                "confirmNewPassword": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string"
+                },
+                "oldPassword": {
+                    "type": "string"
                 }
             }
         },

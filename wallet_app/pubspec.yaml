@@ -45,6 +45,7 @@ flutter:
     - assets/pages/
     - assets/icons/
     - assets/images/
+    - assets/pays/
     - assets/key/Mch38806_PrivateKey.pem
     - assets/key/public_key.pem
 

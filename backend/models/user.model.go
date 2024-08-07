@@ -64,6 +64,12 @@ type UserUpdate struct {
 	Verified  bool   `json:"verified,omitempty"`
 }
 
+type UserPasswordUpdate struct {
+	OldPassword        string `json:"oldPassword,omitempty"`
+	NewPassword        string `json:"newPassword,omitempty"`
+	ConfirmNewPassword string `json:"confirmNewPassword,omitempty"`
+}
+
 type SignInResponse struct {
 	Token       string       `json:"token"`
 	UserDetails UserResponse `json:"user"`

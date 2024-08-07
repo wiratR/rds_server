@@ -36,7 +36,7 @@ func notifyHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Register handler for /notify endpoint
-	http.HandleFunc("/notify", notifyHandler)
+	http.HandleFunc("/payment/notify", notifyHandler)
 
 	// Start server on port 8082
 	log.Println("Starting server on port 8082...")
