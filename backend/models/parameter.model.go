@@ -34,6 +34,7 @@ type Station struct {
 	ShortName   string    `gorm:"type:varchar(5);uniqueIndex;not null"`             // Station Short Name, unique and not null
 	Description string    `gorm:"type:varchar(100);uniqueIndex;not null"`           // Description, unique and not null
 	IsCrossLine bool      `gorm:"type:bool;default:false;not null"`                 // IsCrossLine, default is false
+	LineId      int       `gorm:"type:int;not null"`
 	CreatedAt   time.Time // Automatically handled by GORM for creation timestamp
 	UpdatedAt   time.Time // Automatically handled by GORM for update timestamp
 }
@@ -67,6 +68,15 @@ type Fare struct {
 	CardTypeId  int       `gorm:"type:int;not null"`
 	MediaTypeId int       `gorm:"type:int;not null"`
 	Amount      int       `gorm:"type:int;not null"`
+	CreatedAt   time.Time // Automatically handled by GORM for creation timestamp
+	UpdatedAt   time.Time // Automatically handled by GORM for update timestamp
+}
+
+// Transaction Type struct for storing Transaction Type details with GORM annotations
+type TxnType struct {
+	ID          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	TxnTypeId   int       `gorm:"type:int;uniqueIndex;not null"`          // Transaction Type ID, unique and not null
+	Description string    `gorm:"type:varchar(100);uniqueIndex;not null"` // Description, unique and not null
 	CreatedAt   time.Time // Automatically handled by GORM for creation timestamp
 	UpdatedAt   time.Time // Automatically handled by GORM for update timestamp
 }
@@ -110,6 +120,13 @@ func (sp *ServiceProvider) BeforeCreate(tx *gorm.DB) (err error) {
 func (f *Fare) BeforeCreate(tx *gorm.DB) (err error) {
 	if f.ID == uuid.Nil {
 		f.ID = uuid.New()
+	}
+	return
+}
+
+func (t *TxnType) BeforeCreate(tx *gorm.DB) (err error) {
+	if t.ID == uuid.Nil {
+		t.ID = uuid.New()
 	}
 	return
 }

@@ -26,6 +26,15 @@ type ResponseBody struct {
 	Data   interface{} `json:"data"`
 }
 
+type ResponseSuccessAccount struct {
+	Status string `json:"status"`
+	Data   struct {
+		User         UserResponse    `json:"user"`
+		Account      AccountResponse `json:"account"`
+		TxnHistories []TxnHistory    `json:"txn_histories"`
+	} `json:"data"`
+}
+
 func ApiResponse(isSuccess bool, data interface{}) ResponseBody {
 	status := ""
 	if isSuccess {

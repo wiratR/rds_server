@@ -23,7 +23,7 @@ class _PaymentCompletionScreenState extends State<PaymentCompletionScreen> {
   }
 
   void _startCountdown() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_countdown == 0) {
         _timer?.cancel();
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);

@@ -1,5 +1,89 @@
 basePath: /api
 definitions:
+  models.Account:
+    properties:
+      accountToken:
+        type: string
+      accountType:
+        type: string
+      active:
+        type: boolean
+      balance:
+        type: integer
+      blockFlag:
+        type: integer
+      createdAt:
+        type: string
+      id:
+        type: string
+      lastEntryLocId:
+        type: integer
+      lastEntrySpId:
+        type: integer
+      lastEntryTime:
+        type: string
+      status:
+        type: string
+      txnHistories:
+        description: One-to-many relationship with TxnHistory
+        items:
+          $ref: '#/definitions/models.TxnHistory'
+        type: array
+      updatedAt:
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/models.User'
+        description: Association
+      userID:
+        description: Foreign key, unique constraint for one-to-one relationship
+        type: string
+    type: object
+  models.AccountResponse:
+    properties:
+      account_token:
+        type: string
+      account_type:
+        type: string
+      active:
+        type: boolean
+      balance:
+        type: integer
+      block_flag:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: string
+      last_entry_loc_id:
+        type: integer
+      last_entry_sp_id:
+        type: integer
+      last_entry_time:
+        type: string
+      status:
+        type: string
+      txn_histories:
+        items:
+          $ref: '#/definitions/models.TxnHistory'
+        type: array
+      updated_at:
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/models.UserResponse'
+        description: UserID         uuid.UUID    `json:"user_id"`
+    type: object
+  models.AccoutCreateInput:
+    properties:
+      account_type:
+        type: string
+      user_id:
+        type: string
+    required:
+    - account_type
+    - user_id
+    type: object
   models.ResponseBody:
     properties:
       data: {}
@@ -12,6 +96,22 @@ definitions:
         properties:
           message:
             type: string
+        type: object
+      status:
+        type: string
+    type: object
+  models.ResponseSuccessAccount:
+    properties:
+      data:
+        properties:
+          account:
+            $ref: '#/definitions/models.AccountResponse'
+          txn_histories:
+            items:
+              $ref: '#/definitions/models.TxnHistory'
+            type: array
+          user:
+            $ref: '#/definitions/models.UserResponse'
         type: object
       status:
         type: string
@@ -67,31 +167,73 @@ definitions:
     properties:
       email:
         type: string
-      firstName:
+      first_name:
         type: string
-      lastName:
+      last_name:
         type: string
       password:
         minLength: 8
         type: string
-      passwordConfirm:
+      password_confirm:
         minLength: 8
         type: string
       phone:
         type: string
-      userName:
+      user_name:
         type: string
     required:
     - email
-    - firstName
-    - lastName
+    - first_name
+    - last_name
     - password
-    - passwordConfirm
+    - password_confirm
     - phone
-    - userName
+    - user_name
+    type: object
+  models.TxnHistory:
+    properties:
+      account:
+        allOf:
+        - $ref: '#/definitions/models.Account'
+        description: Association
+      accountID:
+        description: Foreign key to Account
+        type: string
+      createdAt:
+        type: string
+      equipmentNumber:
+        type: string
+      id:
+        type: string
+      locEntryId:
+        type: integer
+      locExitId:
+        type: integer
+      spId:
+        type: integer
+      txnAmount:
+        type: integer
+      txnRefId:
+        type: string
+      txnTypeId:
+        type: integer
+      updatedAt:
+        type: string
+    required:
+    - equipmentNumber
+    - locEntryId
+    - locExitId
+    - spId
+    - txnAmount
+    - txnRefId
+    - txnTypeId
     type: object
   models.User:
     properties:
+      account:
+        allOf:
+        - $ref: '#/definitions/models.Account'
+        description: One-to-one relationship with Account
       createdAt:
         type: string
       email:
@@ -117,24 +259,26 @@ definitions:
     type: object
   models.UserPasswordUpdate:
     properties:
-      confirmNewPassword:
+      confirm_new_password:
         type: string
-      newPassword:
+      new_password:
         type: string
-      oldPassword:
+      old_password:
         type: string
     type: object
   models.UserResponse:
     properties:
+      account_id:
+        type: string
       created_at:
         type: string
       email:
         type: string
-      firstName:
+      first_name:
         type: string
       id:
         type: string
-      lastName:
+      last_name:
         type: string
       phone:
         type: string
@@ -142,16 +286,16 @@ definitions:
         type: string
       updated_at:
         type: string
-      userName:
+      user_name:
         type: string
     type: object
   models.UserUpdate:
     properties:
       email:
         type: string
-      firstName:
+      first_name:
         type: string
-      lastName:
+      last_name:
         type: string
       password:
         type: string
@@ -159,7 +303,7 @@ definitions:
         type: string
       role:
         type: string
-      userName:
+      user_name:
         type: string
       verified:
         type: boolean
@@ -178,6 +322,57 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /accounts/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: get account by user id func get account infomation by userid
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ResponseSuccessAccount'
+            type: array
+      summary: get account by user id func get account infomation by userid
+      tags:
+      - Accounts
+  /accounts/create:
+    post:
+      consumes:
+      - application/json
+      description: create new account with user id
+      parameters:
+      - description: Account Data
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.AccoutCreateInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Ok
+          schema:
+            items:
+              $ref: '#/definitions/models.ResponseSuccessAccount'
+            type: array
+        "400":
+          description: Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: create new account with user id
+      tags:
+      - Accounts
   /auth/login:
     post:
       consumes:
@@ -312,7 +507,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/models.ResponseSuccessUser'
             type: array
       summary: get user infomation by id
       tags:
@@ -350,7 +545,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/models.ResponseSuccessUser'
             type: array
       summary: get current user
       tags:
@@ -374,7 +569,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/models.ResponseSuccessUser'
             type: array
       summary: update user detail
       tags:
@@ -398,7 +593,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/models.ResponseSuccessUser'
             type: array
       summary: update user detail by user id
       tags:
@@ -422,7 +617,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.User'
+              $ref: '#/definitions/models.ResponseSuccessUser'
             type: array
       summary: update user password
       tags:

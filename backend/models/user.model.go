@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	ID        *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	ID        *uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	UserName  string     `gorm:"type:varchar(100);uniqueIndex;not null"`
 	FirstName string     `gorm:"type:varchar(100);not null"`
 	LastName  string     `gorm:"type:varchar(100);not null"`
@@ -19,16 +19,18 @@ type User struct {
 	Role      *string    `gorm:"type:varchar(50);default:'user';not null"`
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
+	// One-to-one relationship with Account
+	Account *Account `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type SignUpInput struct {
-	UserName        string `json:"userName" validate:"required"`
-	FirstName       string `json:"firstName" validate:"required"`
-	LastName        string `json:"lastName" validate:"required"`
+	UserName        string `json:"user_name" validate:"required"`
+	FirstName       string `json:"first_name" validate:"required"`
+	LastName        string `json:"last_name" validate:"required"`
 	Email           string `json:"email" validate:"required"`
 	Phone           string `json:"phone" validate:"required"`
 	Password        string `json:"password" validate:"required,min=8"`
-	PasswordConfirm string `json:"passwordConfirm" validate:"required,min=8"`
+	PasswordConfirm string `json:"password_confirm" validate:"required,min=8"`
 }
 
 type SignInInput struct {
@@ -42,21 +44,22 @@ type SignInByPhone struct {
 }
 
 type UserResponse struct {
-	ID        uuid.UUID `json:"id,omitempty"`
-	UserName  string    `json:"userName,omitempty"`
-	FirstName string    `json:"firstName,omitempty"`
-	LastName  string    `json:"lastName,omitempty"`
-	Email     string    `json:"email,omitempty"`
-	Phone     string    `json:"phone,omitempty"`
-	Role      string    `json:"role,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        uuid.UUID  `json:"id,omitempty"`
+	UserName  string     `json:"user_name,omitempty"`
+	FirstName string     `json:"first_name,omitempty"`
+	LastName  string     `json:"last_name,omitempty"`
+	Email     string     `json:"email,omitempty"`
+	Phone     string     `json:"phone,omitempty"`
+	Role      string     `json:"role,omitempty"`
+	AccountID *uuid.UUID `json:"account_id,omitempty"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
 }
 
 type UserUpdate struct {
-	UserName  string `json:"userName,omitempty"`
-	FirstName string `json:"firstName,omitempty"`
-	LastName  string `json:"lastName,omitempty"`
+	UserName  string `json:"user_name,omitempty"`
+	FirstName string `json:"first_name,omitempty"`
+	LastName  string `json:"last_name,omitempty"`
 	Email     string `json:"email,omitempty"`
 	Phone     string `json:"phone,omitempty"`
 	Password  string `json:"password,omitempty"`
@@ -65,9 +68,9 @@ type UserUpdate struct {
 }
 
 type UserPasswordUpdate struct {
-	OldPassword        string `json:"oldPassword,omitempty"`
-	NewPassword        string `json:"newPassword,omitempty"`
-	ConfirmNewPassword string `json:"confirmNewPassword,omitempty"`
+	OldPassword        string `json:"old_password,omitempty"`
+	NewPassword        string `json:"new_password,omitempty"`
+	ConfirmNewPassword string `json:"confirm_new_password,omitempty"`
 }
 
 type SignInResponse struct {
@@ -75,7 +78,7 @@ type SignInResponse struct {
 	UserDetails UserResponse `json:"user"`
 }
 
-func FilterUserRecord(user *User) UserResponse {
+func FilterUserRecord(user *User, accountId *uuid.UUID) UserResponse {
 	return UserResponse{
 		ID:        *user.ID,
 		UserName:  user.UserName,
@@ -84,6 +87,7 @@ func FilterUserRecord(user *User) UserResponse {
 		Email:     user.Email,
 		Phone:     user.Phone,
 		Role:      *user.Role,
+		AccountID: accountId,
 		CreatedAt: *user.CreatedAt,
 		UpdatedAt: *user.UpdatedAt,
 	}

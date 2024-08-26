@@ -6,9 +6,11 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/wiratR/rds_server/config"
+	"github.com/wiratR/rds_server/controllers"
 	"github.com/wiratR/rds_server/database"
 	"github.com/wiratR/rds_server/models"
 	"github.com/wiratR/rds_server/utils"
+	"gorm.io/gorm"
 )
 
 func DeserializeUser(c *fiber.Ctx) error {
@@ -40,7 +42,18 @@ func DeserializeUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusForbidden).JSON(models.ApiResponse(false, fiber.Map{"message": "the user belonging to this token no logger exists"}))
 	}
 
-	c.Locals("user", models.FilterUserRecord(&user))
+	accountIDPtr, err := controllers.GetAccountIDByUserId(*user.ID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+	}
+
+	c.Locals("user", models.FilterUserRecord(&user, accountIDPtr))
 
 	return c.Next()
 }

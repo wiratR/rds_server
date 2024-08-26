@@ -24,6 +24,84 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/accounts/create": {
+            "post": {
+                "description": "create new account with user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "create new account with user id",
+                "parameters": [
+                    {
+                        "description": "Account Data",
+                        "name": "Payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AccoutCreateInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Ok",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ResponseSuccessAccount"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/accounts/{userId}": {
+            "get": {
+                "description": "get account by user id func get account infomation by userid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Accounts"
+                ],
+                "summary": "get account by user id func get account infomation by userid",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ResponseSuccessAccount"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "login",
@@ -253,7 +331,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.User"
+                                "$ref": "#/definitions/models.ResponseSuccessUser"
                             }
                         }
                     }
@@ -290,7 +368,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.User"
+                                "$ref": "#/definitions/models.ResponseSuccessUser"
                             }
                         }
                     }
@@ -327,7 +405,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.User"
+                                "$ref": "#/definitions/models.ResponseSuccessUser"
                             }
                         }
                     }
@@ -364,7 +442,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.User"
+                                "$ref": "#/definitions/models.ResponseSuccessUser"
                             }
                         }
                     }
@@ -399,7 +477,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.User"
+                                "$ref": "#/definitions/models.ResponseSuccessUser"
                             }
                         }
                     }
@@ -408,6 +486,136 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Account": {
+            "type": "object",
+            "properties": {
+                "accountToken": {
+                    "type": "string"
+                },
+                "accountType": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "balance": {
+                    "type": "integer"
+                },
+                "blockFlag": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastEntryLocId": {
+                    "type": "integer"
+                },
+                "lastEntrySpId": {
+                    "type": "integer"
+                },
+                "lastEntryTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "txnHistories": {
+                    "description": "One-to-many relationship with TxnHistory",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TxnHistory"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user": {
+                    "description": "Association",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    ]
+                },
+                "userID": {
+                    "description": "Foreign key, unique constraint for one-to-one relationship",
+                    "type": "string"
+                }
+            }
+        },
+        "models.AccountResponse": {
+            "type": "object",
+            "properties": {
+                "account_token": {
+                    "type": "string"
+                },
+                "account_type": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "balance": {
+                    "type": "integer"
+                },
+                "block_flag": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "last_entry_loc_id": {
+                    "type": "integer"
+                },
+                "last_entry_sp_id": {
+                    "type": "integer"
+                },
+                "last_entry_time": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "txn_histories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TxnHistory"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "description": "UserID         uuid.UUID    ` + "`" + `json:\"user_id\"` + "`" + `",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.UserResponse"
+                        }
+                    ]
+                }
+            }
+        },
+        "models.AccoutCreateInput": {
+            "type": "object",
+            "required": [
+                "account_type",
+                "user_id"
+            ],
+            "properties": {
+                "account_type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ResponseBody": {
             "type": "object",
             "properties": {
@@ -425,6 +633,31 @@ const docTemplate = `{
                     "properties": {
                         "message": {
                             "type": "string"
+                        }
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ResponseSuccessAccount": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "account": {
+                            "$ref": "#/definitions/models.AccountResponse"
+                        },
+                        "txn_histories": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TxnHistory"
+                            }
+                        },
+                        "user": {
+                            "$ref": "#/definitions/models.UserResponse"
                         }
                     }
                 },
@@ -510,35 +743,91 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "firstName",
-                "lastName",
+                "first_name",
+                "last_name",
                 "password",
-                "passwordConfirm",
+                "password_confirm",
                 "phone",
-                "userName"
+                "user_name"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "firstName": {
+                "first_name": {
                     "type": "string"
                 },
-                "lastName": {
+                "last_name": {
                     "type": "string"
                 },
                 "password": {
                     "type": "string",
                     "minLength": 8
                 },
-                "passwordConfirm": {
+                "password_confirm": {
                     "type": "string",
                     "minLength": 8
                 },
                 "phone": {
                     "type": "string"
                 },
-                "userName": {
+                "user_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TxnHistory": {
+            "type": "object",
+            "required": [
+                "equipmentNumber",
+                "locEntryId",
+                "locExitId",
+                "spId",
+                "txnAmount",
+                "txnRefId",
+                "txnTypeId"
+            ],
+            "properties": {
+                "account": {
+                    "description": "Association",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Account"
+                        }
+                    ]
+                },
+                "accountID": {
+                    "description": "Foreign key to Account",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "equipmentNumber": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "locEntryId": {
+                    "type": "integer"
+                },
+                "locExitId": {
+                    "type": "integer"
+                },
+                "spId": {
+                    "type": "integer"
+                },
+                "txnAmount": {
+                    "type": "integer"
+                },
+                "txnRefId": {
+                    "type": "string"
+                },
+                "txnTypeId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }
@@ -546,6 +835,14 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "properties": {
+                "account": {
+                    "description": "One-to-one relationship with Account",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Account"
+                        }
+                    ]
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -584,13 +881,13 @@ const docTemplate = `{
         "models.UserPasswordUpdate": {
             "type": "object",
             "properties": {
-                "confirmNewPassword": {
+                "confirm_new_password": {
                     "type": "string"
                 },
-                "newPassword": {
+                "new_password": {
                     "type": "string"
                 },
-                "oldPassword": {
+                "old_password": {
                     "type": "string"
                 }
             }
@@ -598,19 +895,22 @@ const docTemplate = `{
         "models.UserResponse": {
             "type": "object",
             "properties": {
+                "account_id": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
                 "email": {
                     "type": "string"
                 },
-                "firstName": {
+                "first_name": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "lastName": {
+                "last_name": {
                     "type": "string"
                 },
                 "phone": {
@@ -622,7 +922,7 @@ const docTemplate = `{
                 "updated_at": {
                     "type": "string"
                 },
-                "userName": {
+                "user_name": {
                     "type": "string"
                 }
             }
@@ -633,10 +933,10 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
-                "firstName": {
+                "first_name": {
                     "type": "string"
                 },
-                "lastName": {
+                "last_name": {
                     "type": "string"
                 },
                 "password": {
@@ -648,7 +948,7 @@ const docTemplate = `{
                 "role": {
                     "type": "string"
                 },
-                "userName": {
+                "user_name": {
                     "type": "string"
                 },
                 "verified": {

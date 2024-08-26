@@ -19,13 +19,13 @@ class RegisterInput {
 
   Map<String, dynamic> toJson() {
     return {
-      'firstName': firstName,
-      'lastName': lastName,
-      'userName': userName,
+      'first_name': firstName,
+      'last_name': lastName,
+      'user_name': userName,
       'phone': phone,
       'email': email,
       'password': password,
-      'passwordConfirm': passwordConfirm,
+      'password_confirm': passwordConfirm,
     };
   }
 }

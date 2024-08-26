@@ -21,9 +21,9 @@ class UserDetails {
   factory UserDetails.fromJson(Map<String, dynamic> json) {
     return UserDetails(
       id: json['id'] as String,
-      userName: json['userName'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
+      userName: json['user_name'] as String,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String,
       role: json['role'] as String,
@@ -34,9 +34,9 @@ class UserDetails {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'userName': userName,
-      'firstName': firstName,
-      'lastName': lastName,
+      'user_name': userName,
+      'first_name': firstName,
+      'last_name': lastName,
       'email': email,
       'phone': phone,
       'role': role,
@@ -83,9 +83,9 @@ class UserResponse {
   factory UserResponse.fromJson(Map<String, dynamic> json) {
     return UserResponse(
       id: json['id'] as String,
-      userName: json['userName'] as String,
-      firstName: json['firstName'] as String,
-      lastName: json['lastName'] as String,
+      userName: json['user_name'] as String,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
       email: json['email'] as String,
       phone: json['phone'] as String,
       role: json['role'] as String,
@@ -98,9 +98,9 @@ class UserResponse {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'userName': userName,
-      'firstName': firstName,
-      'lastName': lastName,
+      'user_name': userName,
+      'first_name': firstName,
+      'last_name': lastName,
       'email': email,
       'phone': phone,
       'role': role,

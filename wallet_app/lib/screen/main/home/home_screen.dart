@@ -133,10 +133,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHomeContent() {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        // mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(10.0),
             child: BalanceCard(
               balance: balance,
             ),
@@ -146,6 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: _handleAddMoney,
             child: const Text('Add Money'),
           ),
+          // ElevatedButton(
+          //   onPressed: () {},
+          //   child: const Text('tranfer'),
+          // ),
         ],
       ),
     );

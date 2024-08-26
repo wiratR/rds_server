@@ -10,6 +10,7 @@ import (
 	dbconn "github.com/wiratR/rds_server/database"
 	"github.com/wiratR/rds_server/models"
 	"github.com/wiratR/rds_server/utils"
+	"gorm.io/gorm"
 )
 
 // get all todos
@@ -25,7 +26,7 @@ func GetAllUsers(c *fiber.Ctx) error {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Success 200 {array} models.User
+// @Success 200 {array} models.ResponseSuccessUser
 // @Router /users/me [get]
 func GetMe(c *fiber.Ctx) error {
 	id := c.Cookies("user_id")
@@ -39,7 +40,19 @@ func GetMe(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "User id " + id + " not found"})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": gin.H{"user": models.FilterUserRecord(&user)}})
+	accountIDPtr, err := GetAccountIDByUserId(*user.ID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "fail", "message": "User id " + id + " not found"})
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": gin.H{"user": models.FilterUserRecord(&user, accountIDPtr)}})
 }
 
 // Get User by Id func get user infomation by id
@@ -49,7 +62,7 @@ func GetMe(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
-// @Success 200 {array} models.User
+// @Success 200 {array} models.ResponseSuccessUser
 // @Router /users/{id} [get]
 func GetUserById(c *fiber.Ctx) error {
 	var isSuccess bool = false
@@ -65,8 +78,21 @@ func GetUserById(c *fiber.Ctx) error {
 	if result.RowsAffected == 0 {
 		return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "the given ID is not found"}))
 	}
+
+	accountIDPtr, err := GetAccountIDByUserId(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+			return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err}))
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+	}
+
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"user": models.FilterUserRecord(&user)}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"user": models.FilterUserRecord(&user, accountIDPtr)}))
 }
 
 // Update user detail
@@ -76,7 +102,7 @@ func GetUserById(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Payload body models.UserUpdate true "User Update Data"
-// @Success 200 {array} models.User
+// @Success 200 {array} models.ResponseSuccessUser
 // @Router /users/update [patch]
 func UpdateUser(c *fiber.Ctx) error {
 	var payload *models.UserUpdate
@@ -125,8 +151,20 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Invalid email or password"}))
 	}
 
+	accountIDPtr, err := GetAccountIDByUserId(*oldUser.ID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+			return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err}))
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+	}
+
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser)}}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser, accountIDPtr)}}))
 }
 
 // Update user detail by user id
@@ -136,7 +174,7 @@ func UpdateUser(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Payload body models.UserUpdate true "User Update Data"
-// @Success 200 {array} models.User
+// @Success 200 {array} models.ResponseSuccessUser
 // @Router /users/update/{id} [patch]
 func UpdateUserById(c *fiber.Ctx) error {
 	var payload *models.UserUpdate
@@ -189,8 +227,20 @@ func UpdateUserById(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Invalid email or password"}))
 	}
 
+	accountIDPtr, err := GetAccountIDByUserId(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+			return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err}))
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+	}
+
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser)}}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser, accountIDPtr)}}))
 }
 
 // Delete user by user id
@@ -225,7 +275,7 @@ func DeleteUserById(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Payload body models.UserPasswordUpdate true "Update user password"
-// @Success 200 {array} models.User
+// @Success 200 {array} models.ResponseSuccessUser
 // @Router /users/updatepassword/{id} [patch]
 func UpdateUserPasswordById(c *fiber.Ctx) error {
 	var isSuccess bool = false
@@ -273,6 +323,18 @@ func UpdateUserPasswordById(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Invalid email or password"}))
 	}
 
+	accountIDPtr, err := GetAccountIDByUserId(id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+			return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err}))
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+	}
+
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser)}}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser, accountIDPtr)}}))
 }

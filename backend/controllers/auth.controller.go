@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 
 	"github.com/wiratR/rds_server/config"
 	dbconn "github.com/wiratR/rds_server/database"
@@ -67,9 +68,22 @@ func SignUpUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Something bad happened"}))
 	}
 
+	accountIDPtr, err := GetAccountIDByUserId(*newUser.ID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+			return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err}))
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "User ID alredy use in accout"}))
+	}
+
 	isSuccess = true
 	// return success 201
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"user": models.FilterUserRecord(&newUser)}))
+	return c.Status(fiber.StatusCreated).JSON(models.ApiResponse(isSuccess, fiber.Map{"user": models.FilterUserRecord(&newUser, accountIDPtr)}))
 }
 
 // SignInUser func Login
@@ -273,13 +287,26 @@ func SignInByPhone(c *fiber.Ctx) error {
 
 	id := c.Cookies("user_id")
 
-	fmt.Printf("authe controller check: id = %s\n", id)
+	fmt.Printf("auth controller check: id = %s\n", id)
+
+	accountIDPtr, err := GetAccountIDByUserId(*user.ID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			fmt.Println("account not found")
+		} else {
+			fmt.Println("Error occurred:", err)
+			return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err}))
+		}
+	} else {
+		fmt.Printf("account ID: %v\n", *accountIDPtr)
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "User ID alredy use in accout"}))
+	}
 
 	isSuccess = true
 	// return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"token": access_token}))
 	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, models.SignInResponse{
 		Token:       access_token,
-		UserDetails: models.FilterUserRecord(&user),
+		UserDetails: models.FilterUserRecord(&user, accountIDPtr),
 	}))
 
 }
