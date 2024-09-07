@@ -659,7 +659,7 @@ func DeleteTxnType(c *fiber.Ctx) error {
 
 func getStationNameById(stationId int) string {
 	var station models.Station
-	result := dbconn.DB.First(&station, "StationId = ?", stationId)
+	result := dbconn.DB.First(&station, "station_id = ?", stationId)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			log.Printf("Station with ID %d not found", stationId)
@@ -674,7 +674,7 @@ func getStationNameById(stationId int) string {
 
 func getLineIdByStationId(stationId int) int {
 	var station models.Station
-	result := dbconn.DB.First(&station, "StationId = ?", stationId)
+	result := dbconn.DB.First(&station, "station_id = ?", stationId)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			log.Printf("Station with ID %d not found", stationId)
@@ -689,7 +689,7 @@ func getLineIdByStationId(stationId int) int {
 
 func getLineNameByLineId(lineId int) string {
 	var line models.Line
-	result := dbconn.DB.First(&line, "LineId = ?", lineId)
+	result := dbconn.DB.First(&line, "line_id = ?", lineId)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
 			log.Printf("Station with ID %d not found", lineId)
@@ -700,4 +700,35 @@ func getLineNameByLineId(lineId int) string {
 	}
 
 	return line.Description
+}
+
+func getTxnTypeNameById(txnTypeId int) string {
+	var txnType models.TxnType
+	result := dbconn.DB.First(&txnType, "txn_type_id = ?", txnTypeId)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			log.Printf("Transaction Type with ID %d not found", txnTypeId)
+			return ""
+		}
+		log.Printf("Error retrieving station: %v", result.Error)
+		return ""
+	}
+
+	return txnType.Description
+}
+
+func getSpNameById(spId int) string {
+	var sp models.ServiceProvider
+
+	result := dbconn.DB.First(&sp, "service_provide_id = ?", spId)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			log.Printf("Service Provider with ID %d not found", spId)
+			return ""
+		}
+		log.Printf("Error retrieving station: %v", result.Error)
+		return ""
+	}
+
+	return sp.Description
 }

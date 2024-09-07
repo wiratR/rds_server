@@ -24,6 +24,41 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/Txnhistories/{accountId}": {
+            "get": {
+                "description": "retrieves a transaction history by account ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Txnhistories"
+                ],
+                "summary": "retrieves a transaction history by account ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "accountId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TxnHistoryResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/accounts/create": {
             "post": {
                 "description": "create new account with user id",
@@ -268,6 +303,49 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/models.ResponseBody"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/txnhistories/create": {
+            "post": {
+                "description": "create transaction history with account id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Txnhistories"
+                ],
+                "summary": "create transaction history with account id",
+                "parameters": [
+                    {
+                        "description": "Txn Create Input Data",
+                        "name": "Payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TxnCreateInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Ok",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TxnHistoryResponse"
                             }
                         }
                     },
@@ -582,22 +660,15 @@ const docTemplate = `{
                 "status": {
                     "type": "string"
                 },
-                "txn_histories": {
+                "txn_histories_detail": {
+                    "description": "UserID         uuid.UUID    ` + "`" + `json:\"user_id\"` + "`" + `\nUser               UserResponse         ` + "`" + `json:\"user\"` + "`" + `",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.TxnHistory"
+                        "$ref": "#/definitions/models.TxnHistoryResponse"
                     }
                 },
                 "updated_at": {
                     "type": "string"
-                },
-                "user": {
-                    "description": "UserID         uuid.UUID    ` + "`" + `json:\"user_id\"` + "`" + `",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.UserResponse"
-                        }
-                    ]
                 }
             }
         },
@@ -612,6 +683,31 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LineDetail": {
+            "type": "object",
+            "properties": {
+                "line_id": {
+                    "type": "integer"
+                },
+                "line_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LocDetail": {
+            "type": "object",
+            "properties": {
+                "line_detail": {
+                    "$ref": "#/definitions/models.LineDetail"
+                },
+                "loc_id": {
+                    "type": "integer"
+                },
+                "loc_name": {
                     "type": "string"
                 }
             }
@@ -776,6 +872,54 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SpDetail": {
+            "type": "object",
+            "properties": {
+                "sp_id": {
+                    "type": "integer"
+                },
+                "sp_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TxnCreateInput": {
+            "type": "object",
+            "properties": {
+                "equipment_number": {
+                    "type": "string"
+                },
+                "loc_entry_id": {
+                    "type": "integer"
+                },
+                "loc_exit_id": {
+                    "type": "integer"
+                },
+                "sp_id": {
+                    "type": "integer"
+                },
+                "txn_amount": {
+                    "type": "integer"
+                },
+                "txn_ref_id": {
+                    "type": "string"
+                },
+                "txn_type_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.TxnDetail": {
+            "type": "object",
+            "properties": {
+                "txn_type_id": {
+                    "type": "integer"
+                },
+                "txn_type_name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.TxnHistory": {
             "type": "object",
             "required": [
@@ -828,6 +972,38 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TxnHistoryResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "equipment_number": {
+                    "type": "string"
+                },
+                "loc_entry_detail": {
+                    "$ref": "#/definitions/models.LocDetail"
+                },
+                "loc_exit_detail": {
+                    "$ref": "#/definitions/models.LocDetail"
+                },
+                "sp_detail": {
+                    "$ref": "#/definitions/models.SpDetail"
+                },
+                "txn_amount": {
+                    "type": "integer"
+                },
+                "txn_detail": {
+                    "$ref": "#/definitions/models.TxnDetail"
+                },
+                "txn_ref_id": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }

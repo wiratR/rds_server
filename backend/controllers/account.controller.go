@@ -67,9 +67,41 @@ func CreateAccount(c *fiber.Ctx) error {
 	} else if createAccoutResult.Error != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "Something bad happened"}))
 	}
+
+	fmt.Println(newAccount.ID)
+
+	// add make a new txn
+	newTxn := models.TxnCreateInput{
+		TxnRefId:        newAccount.AccountToken,
+		TxnTypeId:       1,
+		TxnAmount:       0,
+		SpId:            9,
+		LocEntryId:      0,
+		LocExitId:       99,
+		EquipmentNumber: "mobile",
+	}
+
+	if toCreateTxn(newTxn, *newAccount.ID) != 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "create txn error"}))
+	}
+
+	var txn []models.TxnHistory
+
+	if err := dbconn.DB.Preload("Account").First(&txn, "account_id = ?", newAccount.ID).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "the account ID then transaction not found"}))
+	}
+
 	isSuccess = true
+
+	txnHistoriesResponse := getTxnHistoriesByAccountId(*newAccount.ID)
+
 	// return success 201
-	return c.Status(fiber.StatusCreated).JSON(models.ApiResponse(isSuccess, fiber.Map{"account": models.FilterAccountRecord(&newAccount)}))
+	return c.Status(fiber.StatusCreated).JSON(
+		models.ApiResponse(
+			isSuccess,
+			fiber.Map{"account": models.FilterAccountRecord(&newAccount, txnHistoriesResponse)},
+		),
+	)
 }
 
 func GetAccountIDByUserId(userId uuid.UUID) (*uuid.UUID, error) {
@@ -120,15 +152,15 @@ func GetAccountByUserId(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "the given ID is not found"}))
 	}
 
-	account.User = &user
+	// account.User = &user
+	// account.User.ID = user.ID
+	// account.User.FirstName = user.FirstName
+	// fmt.Println(account.User.ID)
 
-	account.User.ID = user.ID
-	account.User.FirstName = user.FirstName
-
-	fmt.Println(account.User.ID)
+	txnHistoriesResponse := getTxnHistoriesByAccountId(*account.ID)
 
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"account": models.FilterAccountRecord(&account)}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"account": models.FilterAccountRecord(&account, txnHistoriesResponse)}))
 
 }
 

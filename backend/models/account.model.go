@@ -43,34 +43,31 @@ type AccountResponse struct {
 	LastEntryTime  time.Time `json:"last_entry_time"`
 	Active         bool      `json:"active,omitempty"`
 	// UserID         uuid.UUID    `json:"user_id"`
-	User         UserResponse `json:"user"`
-	TxnHistories []TxnHistory `json:"txn_histories"`
-	CreatedAt    time.Time    `json:"created_at"`
-	UpdatedAt    time.Time    `json:"updated_at"`
+	// User               UserResponse         `json:"user"`
+	TxnHistoriesDetail []TxnHistoryResponse `json:"txn_histories_detail"`
+	CreatedAt          time.Time            `json:"created_at"`
+	UpdatedAt          time.Time            `json:"updated_at"`
 }
 
-func FilterAccountRecord(account *Account) AccountResponse {
+func FilterAccountRecord(account *Account, txnHistoriesDetail []TxnHistoryResponse) AccountResponse {
 	var lastEntryTime time.Time
 	if account.LastEntryTime != nil {
 		lastEntryTime = *account.LastEntryTime
 	}
 
-	userReponse := FilterUserRecord(account.User, account.ID)
-
 	return AccountResponse{
-		ID:             *account.ID,
-		AccountToken:   account.AccountToken,
-		AccountType:    account.AccountType,
-		Status:         account.Status,
-		Balance:        account.Balance,
-		BlockFlag:      account.BlockFlag,
-		LastEntrySpId:  account.LastEntrySpId,
-		LastEntryLocId: account.LastEntryLocId,
-		LastEntryTime:  lastEntryTime,
-		User:           userReponse,
-		Active:         account.Active,
-		CreatedAt:      account.CreatedAt,
-		UpdatedAt:      account.UpdatedAt,
-		// TxnHistories:   account.TxnHistories,
+		ID:                 *account.ID,
+		AccountToken:       account.AccountToken,
+		AccountType:        account.AccountType,
+		Status:             account.Status,
+		Balance:            account.Balance,
+		BlockFlag:          account.BlockFlag,
+		LastEntrySpId:      account.LastEntrySpId,
+		LastEntryLocId:     account.LastEntryLocId,
+		LastEntryTime:      lastEntryTime,
+		Active:             account.Active,
+		CreatedAt:          account.CreatedAt,
+		UpdatedAt:          account.UpdatedAt,
+		TxnHistoriesDetail: txnHistoriesDetail,
 	}
 }

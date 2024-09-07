@@ -63,16 +63,15 @@ definitions:
         type: string
       status:
         type: string
-      txn_histories:
+      txn_histories_detail:
+        description: |-
+          UserID         uuid.UUID    `json:"user_id"`
+          User               UserResponse         `json:"user"`
         items:
-          $ref: '#/definitions/models.TxnHistory'
+          $ref: '#/definitions/models.TxnHistoryResponse'
         type: array
       updated_at:
         type: string
-      user:
-        allOf:
-        - $ref: '#/definitions/models.UserResponse'
-        description: UserID         uuid.UUID    `json:"user_id"`
     type: object
   models.AccoutCreateInput:
     properties:
@@ -83,6 +82,22 @@ definitions:
     required:
     - account_type
     - user_id
+    type: object
+  models.LineDetail:
+    properties:
+      line_id:
+        type: integer
+      line_name:
+        type: string
+    type: object
+  models.LocDetail:
+    properties:
+      line_detail:
+        $ref: '#/definitions/models.LineDetail'
+      loc_id:
+        type: integer
+      loc_name:
+        type: string
     type: object
   models.ResponseBody:
     properties:
@@ -190,6 +205,37 @@ definitions:
     - phone
     - user_name
     type: object
+  models.SpDetail:
+    properties:
+      sp_id:
+        type: integer
+      sp_name:
+        type: string
+    type: object
+  models.TxnCreateInput:
+    properties:
+      equipment_number:
+        type: string
+      loc_entry_id:
+        type: integer
+      loc_exit_id:
+        type: integer
+      sp_id:
+        type: integer
+      txn_amount:
+        type: integer
+      txn_ref_id:
+        type: string
+      txn_type_id:
+        type: integer
+    type: object
+  models.TxnDetail:
+    properties:
+      txn_type_id:
+        type: integer
+      txn_type_name:
+        type: string
+    type: object
   models.TxnHistory:
     properties:
       account:
@@ -227,6 +273,27 @@ definitions:
     - txnAmount
     - txnRefId
     - txnTypeId
+    type: object
+  models.TxnHistoryResponse:
+    properties:
+      created_at:
+        type: string
+      equipment_number:
+        type: string
+      loc_entry_detail:
+        $ref: '#/definitions/models.LocDetail'
+      loc_exit_detail:
+        $ref: '#/definitions/models.LocDetail'
+      sp_detail:
+        $ref: '#/definitions/models.SpDetail'
+      txn_amount:
+        type: integer
+      txn_detail:
+        $ref: '#/definitions/models.TxnDetail'
+      txn_ref_id:
+        type: string
+      updated_at:
+        type: string
     type: object
   models.User:
     properties:
@@ -322,6 +389,29 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /Txnhistories/{accountId}:
+    get:
+      consumes:
+      - application/json
+      description: retrieves a transaction history by account ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TxnHistoryResponse'
+            type: array
+      summary: retrieves a transaction history by account ID
+      tags:
+      - Txnhistories
   /accounts/{userId}:
     get:
       consumes:
@@ -489,6 +579,34 @@ paths:
       summary: payment connect to Ksher
       tags:
       - Payment
+  /txnhistories/create:
+    post:
+      consumes:
+      - application/json
+      description: create transaction history with account id
+      parameters:
+      - description: Txn Create Input Data
+        in: body
+        name: Payload
+        required: true
+        schema:
+          $ref: '#/definitions/models.TxnCreateInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Ok
+          schema:
+            items:
+              $ref: '#/definitions/models.TxnHistoryResponse'
+            type: array
+        "400":
+          description: Error
+          schema:
+            $ref: '#/definitions/models.ResponseError'
+      summary: create transaction history with account id
+      tags:
+      - Txnhistories
   /users/{id}:
     get:
       consumes:

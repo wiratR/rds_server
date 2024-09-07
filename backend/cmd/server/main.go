@@ -230,7 +230,9 @@ func seed(db *gorm.DB) {
 	if count == 0 {
 		fares := []models.Fare{
 			{ID: uuid.New(), SpId: 1, LineId: 1, StationId: 1, CardTypeId: 1, MediaTypeId: 1, Amount: 100, CreatedAt: time.Now(), UpdatedAt: time.Now()},
-			{ID: uuid.New(), SpId: 2, LineId: 2, StationId: 2, CardTypeId: 2, MediaTypeId: 2, Amount: 200, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+			{ID: uuid.New(), SpId: 1, LineId: 1, StationId: 2, CardTypeId: 1, MediaTypeId: 1, Amount: 200, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+			{ID: uuid.New(), SpId: 2, LineId: 2, StationId: 1, CardTypeId: 2, MediaTypeId: 1, Amount: 100, CreatedAt: time.Now(), UpdatedAt: time.Now()},
+			{ID: uuid.New(), SpId: 2, LineId: 2, StationId: 2, CardTypeId: 2, MediaTypeId: 1, Amount: 200, CreatedAt: time.Now(), UpdatedAt: time.Now()},
 		}
 
 		if err := db.Create(&fares).Error; err != nil {

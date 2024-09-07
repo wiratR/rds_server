@@ -297,10 +297,11 @@ func SignInByPhone(c *fiber.Ctx) error {
 			fmt.Println("Error occurred:", err)
 			return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": err}))
 		}
-	} else {
-		fmt.Printf("account ID: %v\n", *accountIDPtr)
-		return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "User ID alredy use in accout"}))
 	}
+	// } else {
+	// 	fmt.Printf("account ID: %v\n", *accountIDPtr)
+	// 	return c.Status(fiber.StatusBadRequest).JSON(models.ApiResponse(isSuccess, fiber.Map{"message": "User ID alredy use in accout"}))
+	// }
 
 	isSuccess = true
 	// return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"token": access_token}))

@@ -8,6 +8,6 @@ import (
 
 func TxnHistoryRoute(route fiber.Router) {
 	// routes "/api/txnhistories"
-	// route.Post("/create", middleware.DeserializeUser, controllers.CreateTxnHistory)
 	route.Get("/:accountId", middleware.DeserializeUser, controllers.GetTxnHistoryByAccountId)
+	route.Post("/create", middleware.DeserializeUser, controllers.CreateTxnHistory)
 }

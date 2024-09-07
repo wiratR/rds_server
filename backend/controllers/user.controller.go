@@ -164,7 +164,8 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	isSuccess = true
-	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess, fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser, accountIDPtr)}}))
+	return c.Status(fiber.StatusOK).JSON(models.ApiResponse(isSuccess,
+		fiber.Map{"data": gin.H{"user": models.FilterUserRecord(&updateUser, accountIDPtr)}}))
 }
 
 // Update user detail by user id
