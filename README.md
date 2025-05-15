@@ -1,3 +1,14 @@
+## This sample back end and wallet APP 
+
+test connect kasher payment gate way for TOP up value to wallet
+
+
+https://gateway.ksher.com/demo_sign.html
+
+https://api.ksher.net/KsherAPI/dev/signature_algo.html#_verify_signature
+
+---
+
 sample json
 
 ```json
@@ -24,9 +35,6 @@ sample json
 }
 ```
 
-https://gateway.ksher.com/demo_sign.html
-
-https://api.ksher.net/KsherAPI/dev/signature_algo.html#_verify_signature
 
 
 
@@ -44,6 +52,15 @@ docker-compose up -d --build
 cd wallet_app
 flutter run
 ```
+
+### Run Notify Webhook
+
+```bash
+cd notify
+go run main.go
+```
+
+
 ### this for swagger API
 
 ```bash
