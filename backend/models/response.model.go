@@ -1,5 +1,7 @@
 package models
 
+import "github.com/gofrs/uuid"
+
 type ResponseSuccessToken struct {
 	Status string `json:"status"`
 	Data   struct {
@@ -10,7 +12,8 @@ type ResponseSuccessToken struct {
 type ResponseSuccessUser struct {
 	Status string `json:"status"`
 	Data   struct {
-		User UserResponse `json:"user"`
+		AccountId uuid.UUID    `json:"account_id"`
+		User      UserResponse `json:"user"`
 	} `json:"data"`
 }
 

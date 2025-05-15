@@ -50,7 +50,7 @@ func DeserializeUser(c *fiber.Ctx) error {
 			fmt.Println("Error occurred:", err)
 		}
 	} else {
-		fmt.Printf("account ID: %v\n", *accountIDPtr)
+		fmt.Printf("account ID: %v\n", accountIDPtr)
 	}
 
 	c.Locals("user", models.FilterUserRecord(&user, accountIDPtr))

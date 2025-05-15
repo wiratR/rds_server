@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../constants.dart';
 import '../../routes/app_routes.dart';
+
+// Temporary replacement for the removed PhoneNumber class from intl_phone_number_input
+class PhoneNumber {
+  final String? phoneNumber;
+  final String isoCode;
+
+  PhoneNumber({required this.isoCode, this.phoneNumber});
+}
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -10,21 +17,30 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  String initialCountry = 'TH';
+  final _phoneController = TextEditingController();
+
   PhoneNumber number = PhoneNumber(isoCode: 'TH');
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      // Perform login logic
+      number = PhoneNumber(
+        isoCode: 'TH',
+        phoneNumber: _phoneController.text,
+      );
+
       debugPrint('Phone number: ${number.phoneNumber}');
-      // Navigate to the PasswordScreen
-      // Navigate to the PasswordScreen with the phone number
       Navigator.pushNamed(
         context,
         '/password',
         arguments: PasswordScreenArguments(number.phoneNumber!),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
   }
 
   @override
@@ -36,11 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: <Widget>[
               const SizedBox(height: 60),
-              Image.asset('assets/logo.png',
-                  height: 60), // Replace with your logo
+              Image.asset('assets/logo.png', height: 60),
               const SizedBox(height: 20),
-              Image.asset('assets/pages/phone.png',
-                  height: 220), // Replace with your phone illustration
+              Image.asset('assets/pages/phone.png', height: 220),
               const SizedBox(height: 20),
               const Text(
                 'Enter your mobile number',
@@ -51,16 +65,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: <Widget>[
-                    InternationalPhoneNumberInput(
-                      onInputChanged: (PhoneNumber number) {
-                        this.number = number;
-                      },
-                      selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.DROPDOWN,
-                      ),
-                      initialValue: number,
-                      textFieldController: TextEditingController(),
-                      inputDecoration: const InputDecoration(
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
                         labelText: 'Mobile number',
                         border: OutlineInputBorder(),
                       ),
@@ -91,24 +99,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   IconButton(
-                    icon: Image.asset(
-                        'assets/icons/facebook.png'), // Replace with your Facebook icon
+                    icon: Image.asset('assets/icons/facebook.png'),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Image.asset(
-                        'assets/icons/google.png'), // Replace with your Google icon
+                    icon: Image.asset('assets/icons/google.png'),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Image.asset(
-                        'assets/icons/apple.png'), // Replace with your Apple icon
+                    icon: Image.asset('assets/icons/apple.png'),
                     onPressed: () {},
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-              // Sign Up link
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

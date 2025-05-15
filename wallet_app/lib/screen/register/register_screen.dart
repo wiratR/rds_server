@@ -1,18 +1,23 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import '../../components/appbar/custom_app_bar.dart';
 import '../../constants.dart';
 import '../../service/auth/auth_service.dart';
 import '../../utils/utils.dart';
 import '../login/login_screen.dart';
 
+// Temporary PhoneNumber class since intl_phone_number_input is removed
+class PhoneNumber {
+  final String? phoneNumber;
+  final String isoCode;
+
+  PhoneNumber({required this.isoCode, this.phoneNumber});
+}
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
@@ -26,7 +31,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
-  String initialCountry = 'TH';
   PhoneNumber number = PhoneNumber(isoCode: 'TH');
   bool _isAccepted = false;
   bool _isPasswordVisible = false;
@@ -39,22 +43,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     if (_formKey.currentState!.validate() && _isAccepted) {
-      // Perform registration logic
-      debugPrint('Name: ${_nameController.text}');
-      debugPrint('Email: ${_emailController.text}');
-      debugPrint('Password: ${_passwordController.text}');
-      debugPrint('Confirm Password: ${_confirmPasswordController.text}');
-      debugPrint('Phone number: ${number.phoneNumber}');
+      number = PhoneNumber(isoCode: 'TH', phoneNumber: _phoneController.text);
 
-      // String fullName = "John Doe";
       List<String> fullname = splitName(_nameController.text);
       String firstName = fullname[0];
       String lastName = fullname[1];
-      debugPrint('First Name: $firstName');
-      debugPrint('Last Name: $lastName');
-
       String userName = extractUsername(_emailController.text);
-      debugPrint('User Name: $userName');
 
       String? user = await authService.register(
         firstName,
@@ -67,8 +61,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (user != null) {
-        // Registration successful
-        debugPrint('Register successful! User: $user');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Register successful. Please try login.'),
@@ -80,8 +72,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           MaterialPageRoute(builder: (context) => LoginScreen()),
         );
       } else {
-        // Registration failed
-        debugPrint('Register failed');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Register failed. Please try again.'),
@@ -123,10 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10.0),
               const Text(
                 'Create Account',
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16.0),
               Form(
@@ -142,12 +129,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter name';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Please enter name'
+                          : null,
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
@@ -159,27 +143,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter email';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Please enter email'
+                          : null,
                     ),
                     const SizedBox(height: 16.0),
-                    InternationalPhoneNumberInput(
-                      onInputChanged: (PhoneNumber number) {
-                        this.number = number;
-                      },
-                      selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.DROPDOWN,
-                      ),
-                      initialValue: number,
-                      textFieldController: _phoneController,
-                      inputDecoration: const InputDecoration(
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
                         labelText: 'Mobile number',
                         border: OutlineInputBorder(),
                       ),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Please enter phone number'
+                          : null,
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
@@ -192,11 +170,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
+                          icon: Icon(_isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
                           onPressed: () {
                             setState(() {
                               _isPasswordVisible = !_isPasswordVisible;
@@ -204,12 +180,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           },
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter password';
-                        }
-                        return null;
-                      },
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Please enter password'
+                          : null,
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
@@ -222,11 +195,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         suffixIcon: IconButton(
-                          icon: Icon(
-                            _isConfirmPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
+                          icon: Icon(_isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
                           onPressed: () {
                             setState(() {
                               _isConfirmPasswordVisible =
@@ -261,24 +232,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const Text('I accept '),
                   GestureDetector(
                     onTap: () {
-                      // Handle terms and conditions click
+                      // Navigate to terms
                     },
                     child: const Text(
                       'terms and conditions',
                       style: TextStyle(color: Colors.blue),
                     ),
                   ),
-                ],
-              ),
-              Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                  ), //Padding
-                  const Text('    and '),
+                  const Text(' and '),
                   GestureDetector(
                     onTap: () {
-                      // Handle privacy policy click
+                      // Navigate to privacy policy
                     },
                     child: const Text(
                       'privacy policy',
@@ -315,18 +279,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   IconButton(
-                    icon: Image.asset(
-                        'assets/icons/facebook.png'), // Replace with your Facebook icon
+                    icon: Image.asset('assets/icons/facebook.png'),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Image.asset(
-                        'assets/icons/google.png'), // Replace with your Google icon
+                    icon: Image.asset('assets/icons/google.png'),
                     onPressed: () {},
                   ),
                   IconButton(
-                    icon: Image.asset(
-                        'assets/icons/apple.png'), // Replace with your Apple icon
+                    icon: Image.asset('assets/icons/apple.png'),
                     onPressed: () {},
                   ),
                 ],

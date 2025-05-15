@@ -69,7 +69,7 @@ class AuthService {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         debugPrint('Register successful');
         return response.body; // Example: return token or user data
       } else {

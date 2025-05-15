@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../components/appbar/custom_app_bar.dart';
@@ -6,6 +8,7 @@ import '../../../constants.dart';
 import '../../../models/user/user_model.dart';
 import '../../../service/auth/auth_service.dart';
 import '../../../service/user/user_service.dart';
+import '../../../service/account/account_service.dart';
 import '../card/card_screen.dart';
 import '../history/history_screen.dart';
 import '../more/more_screen.dart';
@@ -25,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   UserResponse? userResponse;
   late AuthService authService;
   String? userId;
+  bool showBalance = true; // Flag to control balance visibility
 
   @override
   void initState() {
@@ -37,13 +41,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initializeServices() async {
-    token = await authService.getToken();
-    if (token != null) {
-      userId = await authService.getUserId();
-      debugPrint('got a user id = $userId');
+    try {
+      token = await authService.getToken();
+      if (token != null) {
+        userId = await authService.getUserId();
+        if (userId != null) {
+          debugPrint('got a user id = $userId');
+          userService = UserService(token!);
+          await _fetchUserDetails(userId!);
+        } else {
+          debugPrint('User ID is null');
+        }
+      } else {
+        debugPrint('Token is null');
+      }
+    } catch (e) {
+      debugPrint('Error initializing services: $e');
+    }
+  }
 
-      userService = UserService(token!);
-      _fetchUserDetails(userId!);
+  Future<void> _fetchUserDetails(String userId) async {
+    debugPrint('start _fetchUserDetails');
+    try {
+      userResponse = await userService.getUserById(userId);
+      if (userResponse != null) {
+        debugPrint('got a userResponse');
+        debugPrint(userResponse?.accountId);
+
+        if (userResponse?.accountId == '00000000-0000-0000-0000-000000000000') {
+          setState(() {
+            showBalance = false; // Do not show balance
+            userDetails = UserDetails.fromUserResponse(userResponse!);
+          });
+        } else {
+          setState(() {
+            showBalance = true; // Show balance
+            userDetails = UserDetails.fromUserResponse(userResponse!);
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching user details: $e');
     }
   }
 
@@ -63,15 +101,44 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _fetchUserDetails(String userId) async {
-    // Implement your logic to fetch user details here
-    debugPrint('start _fetchUserDetails');
-    userResponse = await userService.getUserById(userId);
-    if (userResponse != null) {
-      debugPrint('got a userResponse');
-      setState(() {
-        userDetails = UserDetails.fromUserResponse(userResponse!);
-      });
+  // void _handleBindAccount() {
+  //   // Implement bind account functionality
+  //   debugPrint('Bind Account pressed');
+  //   // Navigate to BindAccountScreen when tapped
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => BindAccountScreen()),
+  //   );
+  // }
+
+  void _handleBindAccount() async {
+    debugPrint('Bind Account pressed');
+
+    if (userId != null && token != null) {
+      // Call the account creation service
+      AccountService accountService = AccountService(token!);
+      String? response = await accountService.createAccount('mobile', userId!);
+
+      if (response != null) {
+        debugPrint('Account created successfully: $response');
+
+        // Refresh the home page by calling _fetchUserDetails again
+        await _fetchUserDetails(userId!);
+
+        // Optionally, show a success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Account created successfully!')),
+        );
+      } else {
+        debugPrint('Failed to create account');
+        // Show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to create account.')),
+        );
+      }
+    } else {
+      debugPrint('User ID or token is null');
+      // Handle error cases where userId or token is missing
     }
   }
 
@@ -133,23 +200,25 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHomeContent() {
     return Center(
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: BalanceCard(
-              balance: balance,
+          if (showBalance) ...[
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: BalanceCard(
+                balance: balance,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _handleAddMoney,
-            child: const Text('Add Money'),
-          ),
-          // ElevatedButton(
-          //   onPressed: () {},
-          //   child: const Text('tranfer'),
-          // ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _handleAddMoney,
+              child: const Text('Add Money'),
+            ),
+          ] else
+            ElevatedButton(
+              onPressed: _handleBindAccount,
+              child: const Text('Bind Account'),
+            ),
         ],
       ),
     );
@@ -159,8 +228,10 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-    if (index == 3) {
+    if (index == 3 && userId != null) {
       _fetchUserDetails(userId!);
+    } else {
+      debugPrint('User ID is null or not set');
     }
   }
 }

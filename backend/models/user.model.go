@@ -44,16 +44,16 @@ type SignInByPhone struct {
 }
 
 type UserResponse struct {
-	ID        uuid.UUID  `json:"id,omitempty"`
-	UserName  string     `json:"user_name,omitempty"`
-	FirstName string     `json:"first_name,omitempty"`
-	LastName  string     `json:"last_name,omitempty"`
-	Email     string     `json:"email,omitempty"`
-	Phone     string     `json:"phone,omitempty"`
-	Role      string     `json:"role,omitempty"`
-	AccountID *uuid.UUID `json:"account_id,omitempty"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	AccountId uuid.UUID `json:"account_id,omitempty"`
+	ID        uuid.UUID `json:"id,omitempty"`
+	UserName  string    `json:"user_name,omitempty"`
+	FirstName string    `json:"first_name,omitempty"`
+	LastName  string    `json:"last_name,omitempty"`
+	Email     string    `json:"email,omitempty"`
+	Phone     string    `json:"phone,omitempty"`
+	Role      string    `json:"role,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UserUpdate struct {
@@ -79,7 +79,15 @@ type SignInResponse struct {
 }
 
 func FilterUserRecord(user *User, accountId *uuid.UUID) UserResponse {
+	var accountID uuid.UUID
+
+	// Check if accountId is nil, handle accordingly
+	if accountId != nil {
+		accountID = *accountId
+	}
+
 	return UserResponse{
+		AccountId: accountID, // AccountId is nil if no account
 		ID:        *user.ID,
 		UserName:  user.UserName,
 		FirstName: user.FirstName,
@@ -87,9 +95,8 @@ func FilterUserRecord(user *User, accountId *uuid.UUID) UserResponse {
 		Email:     user.Email,
 		Phone:     user.Phone,
 		Role:      *user.Role,
-		AccountID: accountId,
-		CreatedAt: *user.CreatedAt,
-		UpdatedAt: *user.UpdatedAt,
+		CreatedAt: *user.CreatedAt, // Ensure non-nil value
+		UpdatedAt: *user.UpdatedAt, // Ensure non-nil value
 	}
 }
 

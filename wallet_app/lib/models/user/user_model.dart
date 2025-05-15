@@ -1,4 +1,5 @@
 class UserDetails {
+  final String accountId;
   final String id;
   final String userName;
   final String firstName;
@@ -8,6 +9,7 @@ class UserDetails {
   final String role;
 
   UserDetails({
+    required this.accountId,
     required this.id,
     required this.userName,
     required this.firstName,
@@ -20,6 +22,7 @@ class UserDetails {
   // Convert a UserDetails from a Map
   factory UserDetails.fromJson(Map<String, dynamic> json) {
     return UserDetails(
+      accountId: json['account_id'] as String,
       id: json['id'] as String,
       userName: json['user_name'] as String,
       firstName: json['first_name'] as String,
@@ -33,6 +36,7 @@ class UserDetails {
   // Convert a UserDetails to a Map
   Map<String, dynamic> toJson() {
     return {
+      'account_id': accountId,
       'id': id,
       'user_name': userName,
       'first_name': firstName,
@@ -45,6 +49,7 @@ class UserDetails {
 
   factory UserDetails.fromUserResponse(UserResponse userResponse) {
     return UserDetails(
+      accountId: userResponse.accountId,
       id: userResponse.id,
       userName: userResponse.userName,
       firstName: userResponse.firstName,
@@ -57,6 +62,7 @@ class UserDetails {
 }
 
 class UserResponse {
+  final String accountId;
   final String id;
   final String userName;
   final String firstName;
@@ -68,6 +74,7 @@ class UserResponse {
   final DateTime updatedAt;
 
   UserResponse({
+    required this.accountId,
     required this.id,
     required this.userName,
     required this.firstName,
@@ -82,6 +89,7 @@ class UserResponse {
   // Convert a UserResponse from a Map
   factory UserResponse.fromJson(Map<String, dynamic> json) {
     return UserResponse(
+      accountId: json['account_id'] as String,
       id: json['id'] as String,
       userName: json['user_name'] as String,
       firstName: json['first_name'] as String,
@@ -97,6 +105,7 @@ class UserResponse {
   // Convert a UserResponse to a Map
   Map<String, dynamic> toJson() {
     return {
+      'account_id': accountId,
       'id': id,
       'user_name': userName,
       'first_name': firstName,
@@ -112,6 +121,7 @@ class UserResponse {
   // Convert UserResponse to UserDetails
   UserDetails toUserDetails() {
     return UserDetails(
+      accountId: accountId,
       id: id,
       userName: userName,
       firstName: firstName,

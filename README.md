@@ -27,3 +27,35 @@ sample json
 https://gateway.ksher.com/demo_sign.html
 
 https://api.ksher.net/KsherAPI/dev/signature_algo.html#_verify_signature
+
+
+
+### Run backend server
+
+```bash
+cd ./backend
+
+docker-compose up -d --build
+```
+
+### Run wallet app client
+
+```bash
+cd wallet_app
+flutter run
+```
+### this for swagger API
+
+```bash
+http://127.0.0.1:8000/swagger/index.html
+```
+
+### this for databse 
+
+```bash
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=6500
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=P@ssw0rd
+POSTGRES_DB=rds_db
+```
